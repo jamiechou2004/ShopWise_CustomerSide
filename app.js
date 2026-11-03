@@ -1,341 +1,340 @@
 /* Shopwise GM console · clickable prototype
-   Flow: Dashboard → Orders & sourcing → Service chain (SW-10482) → Modify order → Nov 2 → Return or exchange */
+   Flow: Overview → Orders & sourcing → Order SW-10482 (service chain) → Modify order → Nov 2 → Return or exchange */
 (function () {
   const D = window.SW;
   const $app = document.getElementById('app');
   const $guide = document.getElementById('guide');
   const $toast = document.getElementById('toast');
-  const money = n => '$' + n.toLocaleString('en-US');
+  const money = n => (n < 0 ? '−$' : '$') + Math.abs(n).toLocaleString('en-US');
 
-  const icon = {
-    grid: '<svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>',
-    link: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6.5 9.5l3-3"/><path d="M7 4.5l1.2-1.2a2.8 2.8 0 014 4L11 8.5"/><path d="M9 11.5l-1.2 1.2a2.8 2.8 0 01-4-4L5 7.5"/></svg>',
-    cart: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M1.5 2h2l1.6 8.2h7.4L14 4.5H4.2"/><circle cx="6.2" cy="13.2" r="1.1" fill="currentColor"/><circle cx="11.6" cy="13.2" r="1.1" fill="currentColor"/></svg>',
-    bubble: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M2 3.5h8v5.5H5l-3 2.5z"/><path d="M10 6h4v5.5l-2.2-1.8H7.5V9"/></svg>',
-    dollar: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M10 5.8c-.4-.6-1.1-.9-2-.9-1.2 0-2 .6-2 1.5 0 2 4 1.1 4 3.2 0 .9-.8 1.5-2 1.5-.9 0-1.7-.4-2.1-1M8 3.6v1.3M8 11.1v1.3"/></svg>',
-    gear: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.3"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg>',
-    search: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>',
-    bell: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M4 11.5V7a4 4 0 018 0v4.5l1 1H3z"/><path d="M6.5 14a1.6 1.6 0 003 0"/></svg>',
-    chevD: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 6.5L8 9.5l3-3"/></svg>',
-    warn: '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2.5l8 14H2z"/><path d="M10 8v4M10 14.2v.3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>',
-    info: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v4.5M10 6.3v.2" stroke-linecap="round"/></svg>',
-    check: '<svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="8.5"/><path d="M6.3 10.2l2.4 2.4 5-5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    lamp: '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M14 6h12l4 12H10z"/><path d="M20 18v14M13 34h14"/><path d="M23 9l-3 6" stroke-width="1.2"/></svg>'
+  const svg = (p, vb = '0 0 24 24') => `<svg viewBox="${vb}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+  const I = {
+    home: svg('<path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>'),
+    box: svg('<path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5l9 4.5 9-4.5M12 12v9"/>'),
+    truck: svg('<path d="M2 6h12v10H2zM14 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>'),
+    chat: svg('<path d="M4 5h16v11H9l-5 4z"/>'),
+    chart: svg('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'),
+    gear: svg('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>'),
+    search: svg('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'),
+    bell: svg('<path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 21a2 2 0 004 0"/>'),
+    chevR: svg('<path d="M9 6l6 6-6 6"/>'),
+    back: svg('<path d="M15 6l-6 6 6 6"/>'),
+    alert: svg('<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.01"/>'),
+    info: svg('<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/>'),
+    check: svg('<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/>'),
+    msg: svg('<path d="M4 5h16v11H9l-5 4z"/>'),
+    x: svg('<path d="M6 6l12 12M18 6L6 18"/>'),
+    lamp: svg('<path d="M8 3h8l3 8H5z"/><path d="M12 11v9M8 21h8"/>'),
+    download: svg('<path d="M12 4v11M7 10l5 5 5-5M4 20h16"/>')
   };
 
   const initial = () => ({
-    view: 'overview', date: 'oct29', win: 'oct30', modified: false, sheet: null, menu: false,
-    ret: null, banner: null, seg: 0,
+    view: 'overview', date: 'oct29', win: 'oct30', modified: false, drawer: null, tab: 0, ret: null,
     draftModify: { type: 'window', win: 'oct31am', reason: D.reasons[0], notify: true },
-    draftReturn: { item: 'lamp', reason: 'Damaged on arrival', mode: 'exchange', pickup: 'Nov 4 · 10–12 · swap on the same visit', notify: true },
+    draftReturn: { item: 'lamp', reason: 'Arrived damaged', mode: 'exchange', pickup: 'Tue, Nov 4 · 10 am–12 pm', notify: true },
     activity: [
-      { t: 'Today 9:12', s: 'Hub received Store B lamp · checked' },
-      { t: 'Oct 28 16:40', s: 'Store A sofa and table received' },
-      { t: 'Oct 27 11:05', s: 'Buyer bought bed, wardrobe, desk & chair at Store C' },
-      { t: 'Oct 26 18:02', s: 'Alex chose Slim shade lamp on Apple Watch (+$16)' },
-      { t: 'Oct 24 20:31', s: 'Alex paid $2,807 in the app' }
+      { t: 'Today, 9:12', s: 'Hub checked the Store B lamp' },
+      { t: 'Oct 28, 16:40', s: 'Store A sofa and coffee table reached the hub' },
+      { t: 'Oct 27, 11:05', s: 'Buyer picked up bed, wardrobe, desk and chair at Store C' },
+      { t: 'Oct 26, 18:02', s: 'Alex swapped to the Slim shade lamp on Apple Watch (+$16)' },
+      { t: 'Oct 24, 20:31', s: 'Alex paid $2,807 in the app' }
     ],
-    fresh: -1
+    fresh: false
   });
   let S = initial();
 
   const win = () => D.windows.find(w => w.id === S.win);
-  const winDate = () => win().label.split(' · ')[0];
+  const winShort = w => `${w.day.split(', ')[1]}, ${w.time}`;
 
+  // ---------- demo guide ----------
   function step() {
     if (S.ret) return 8;
-    if (S.sheet === 'return') return 7;
+    if (S.drawer === 'return') return 7;
     if (S.date === 'nov2') return 6;
     if (S.modified) return 5;
-    if (S.sheet === 'modify') return 4;
-    if (S.view === 'chain') return 3;
+    if (S.drawer === 'modify') return 4;
+    if (S.view === 'order') return 3;
     if (S.view === 'orders') return 2;
     return 1;
   }
   const guideText = {
-    1: 'Dashboard · click <b>Orders &amp; sourcing</b> in the sidebar',
-    2: 'Orders &amp; sourcing · open Alex’s order <b>SW-10482</b>',
-    3: 'Service chain · click <b>Modify order</b>',
-    4: 'Modify order · pick a new window, then <b>Update order</b>',
-    5: 'Order updated · click the <b>date in the toolbar</b> and jump to Nov 2 (after delivery)',
-    6: 'Nov 2 · Alex reported a cracked lamp · click <b>Start return or exchange</b>',
-    7: 'Return or exchange · choose a resolution, then <b>Approve</b>',
-    8: 'Done · every record updated. <b>Back to orders</b> or Restart'
+    1: 'Open <b>Orders &amp; sourcing</b>',
+    2: 'Open Alex’s order <b>SW-10482</b>',
+    3: 'Store C’s bed is late. Click <b>Modify order</b>',
+    4: 'Keep Fri, Oct 31 selected and click <b>Update order</b>',
+    5: 'Switch the demo date to <b>Nov 2</b>',
+    6: 'Alex reported a cracked lamp. Click <b>Start return or exchange</b>',
+    7: 'Choose exchange or refund, then <b>Approve</b>',
+    8: 'Done. The chain, money and activity are all updated.'
   };
-
+  const hint = n => step() === n ? ' hint' : '';
   function renderGuide() {
     const s = step();
-    $guide.innerHTML = `<span class="step-pill">Step ${s} of 8</span><span class="step-text">${guideText[s]}</span>
-      <span class="step-dots">${[1,2,3,4,5,6,7,8].map(i => `<i class="${i <= s ? 'on' : ''}"></i>`).join('')}</span>`;
+    $guide.innerHTML = `<span class="n">${s} / 8</span><span class="bar" aria-hidden="true">${[1,2,3,4,5,6,7,8].map(i => `<i class="${i <= s ? 'on' : ''}"></i>`).join('')}</span>
+      <span class="t">${guideText[s]}</span><button type="button" id="restart">Restart demo</button>`;
   }
 
   // ---------- shell ----------
-  function sidebar() {
-    const items = [['overview', 'Overview', icon.grid], ['chain', 'Service chain', icon.link], ['orders', 'Orders & sourcing', icon.cart],
-      ['care', 'Care & returns', icon.bubble, '12'], ['finance', 'Finance', icon.dollar], ['settings', 'Settings', icon.gear]];
-    return `<nav class="sidebar" aria-label="Sections">
-      <div class="traffic" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="side-title">Shopwise GM</div>
-      ${items.map(([id, label, ic, badge]) => `<button class="side-item ${S.view === id ? 'on' : ''}" data-nav="${id}" type="button">${ic}<span>${label}</span>${badge ? `<span class="badge">${badge}</span>` : ''}</button>`).join('')}
-      <div class="side-account"><span class="avatar">MC</span><span>Maya Chen · GM</span></div>
+  function side() {
+    const items = [['overview', 'Overview', I.home], ['orders', 'Orders & sourcing', I.box], ['routes', 'Hub & routes', I.truck], ['care', 'Care & returns', I.chat, S.date === 'nov2' && !S.ret ? 13 : 12], ['finance', 'Finance', I.chart], ['settings', 'Settings', I.gear]];
+    const active = S.view === 'order' ? 'orders' : S.view;
+    return `<nav class="side" aria-label="Main">
+      <div class="brand"><span class="mark">S</span><span>Shopwise<small>GM console</small></span></div>
+      ${items.map(([id, l, ic, c]) => `<button type="button" class="nav ${active === id ? 'on' : ''}${id === 'orders' ? hint(1) : ''}" data-nav="${id}">${ic}<span>${l}</span>${c ? `<span class="count">${c}</span>` : ''}</button>`).join('')}
+      <div class="grow"></div>
+      <div class="me"><span class="av">MC</span><span>Maya Chen<small>General manager</small></span></div>
     </nav>`;
   }
-  function toolbar() {
-    const dateLabel = S.date === 'oct29' ? 'Oct 29, 2026' : 'Nov 2, 2026';
-    return `<div class="toolbar">
-      <div class="search">${icon.search}<span>Search orders, customers, stores</span></div>
-      <div class="spacer"></div>
-      <span class="muted">Sample data</span>
-      <button class="glass-btn date-btn ${step() === 5 ? 'pulse' : ''}" data-action="menu" type="button" aria-haspopup="menu">${dateLabel}${icon.chevD}</button>
-      <button class="glass-btn round" type="button" aria-label="Alerts" data-action="soon">${icon.bell}</button>
-      ${S.menu ? `<div class="menu" role="menu">
-        <button role="menuitem" data-date="oct29"><span class="check">${S.date === 'oct29' ? '✓' : ''}</span>Oct 29, 2026 · today</button>
-        <button role="menuitem" data-date="nov2"><span class="check">${S.date === 'nov2' ? '✓' : ''}</span>Nov 2, 2026 · after delivery</button>
-      </div>` : ''}
+  function top() {
+    const crumbs = S.view === 'order'
+      ? `<button type="button" data-nav="orders">Orders &amp; sourcing</button>${I.chevR.replace('<svg', '<svg width="14" height="14"')}<b>SW-10482</b>`
+      : `<b>${{ overview: 'Overview', orders: 'Orders & sourcing', routes: 'Hub & routes', care: 'Care & returns', finance: 'Finance', settings: 'Settings' }[S.view]}</b>`;
+    return `<header class="top">
+      <div class="crumbs">${crumbs}</div><div class="grow"></div>
+      <div class="search">${I.search}<span>Search orders, customers…</span><kbd>⌘K</kbd></div>
+      <div class="demo-date"><span>Demo date</span><div class="seg" role="group" aria-label="Demo date">
+        <button type="button" class="${S.date === 'oct29' ? 'on' : ''}" data-date="oct29">Oct 29</button>
+        <button type="button" class="${S.date === 'nov2' ? 'on' : ''}${hint(5)}" data-date="nov2">Nov 2</button></div></div>
+      <button type="button" class="icon-btn" aria-label="Notifications" data-action="soon">${I.bell}</button>
+    </header>`;
+  }
+
+  // ---------- overview ----------
+  function overview() {
+    const total = D.revenue.reduce((a, r) => a + r.value, 0);
+    const max = Math.max(...D.stages.slice(1).map(s => s.count));
+    return `<div class="page">
+      <div class="head"><div><h1>Good morning, Maya</h1><p>${S.date === 'oct29' ? 'Thursday, October 29' : 'Monday, November 2'} · all stores</p></div></div>
+      <div class="kpis">${D.kpis.map(k => `<div class="kpi"><div class="l">${k.label}</div><div class="v">${k.value}</div><div class="d ${k.trend}">${k.delta}</div></div>`).join('')}</div>
+      <div class="ov-grid">
+        <div class="stack">
+          <section class="panel"><div class="panel-h"><h3>Needs your attention</h3><span class="meta">${D.attention.length} open</span></div>
+            <ul class="attn">${D.attention.map(a => `<li><span class="ic ${a.level}">${a.level === 'warn' ? I.alert : I.info}</span><span><b>${a.title}</b><span>${a.body}</span></span>
+              <button type="button" class="btn" ${a.nav ? `data-nav="${a.nav}"` : 'data-action="soon"'}>${a.action}</button></li>`).join('')}</ul></section>
+          <section class="panel"><div class="panel-h"><h3>Orders by stage</h3><span class="meta">One order ID links every stage</span></div>
+            <div class="pipe">${D.stages.map(s => `<div class="st ${s.risk ? 'risk' : ''}"><div class="n">${s.name}</div><div class="c">${s.count.toLocaleString('en-US')}</div><div class="x ${s.risk ? 'risk' : ''}">${s.note}</div></div>`).join('')}</div></section>
+        </div>
+        <section class="panel rev"><div class="panel-h"><h3>Shopwise revenue</h3><span class="meta">Month to date</span></div>
+          <div class="panel-b"><div class="total">${money(total)}</div><div class="sub">Furniture and tax pass through to stores and are not counted</div>
+            <div class="bar">${D.revenue.map(r => `<i style="flex:${r.value}"></i>`).join('')}</div>
+            ${D.revenue.map((r, i) => `<div class="row"><i style="background:${['var(--accent)', '#d9a27e', 'var(--graphite)'][i]}"></i>${r.name}<span class="amt">${money(r.value)}</span><span class="pct">${Math.round(r.value / total * 100)}%</span></div>`).join('')}
+          </div></section>
+      </div></div>`;
+  }
+
+  // ---------- orders ----------
+  const stageNames = ['Plan', 'Order', 'Sourcing', 'At hub', 'Delivery', 'Delivered'];
+  function orderRow(o) {
+    const [id, name, plus, furn, stores, stage0, date0] = o;
+    const isAlex = id === 'SW-10482';
+    const stage = isAlex && S.date === 'nov2' ? 5 : stage0;
+    const tax = isAlex ? 208 : Math.round(furn * 0.0833);
+    const fee = plus ? 0 : Math.round(furn * 0.08);
+    const date = isAlex ? win().day.split(', ')[1] : date0;
+    const storeCls = s => stage >= 4 ? 'in' : stage === 3 ? (isAlex && s === 'C' && S.date === 'oct29' ? 'late' : 'in') : stage === 2 ? (s === stores[0] ? 'in' : '') : '';
+    const status = isAlex && stage === 3 ? '<span class="badge warn">Held for Store C</span>' : stage === 5 ? '<span class="badge ok">Delivered</span>' : '';
+    return `<tr class="${isAlex ? 'focus' : ''}${isAlex ? hint(2) : ''}" ${isAlex ? 'data-nav="order"' : 'data-action="soon"'}>
+      <td class="oid"><b>${id}</b><span>${name}</span></td>
+      <td>${plus ? '<span class="plus">PLUS</span>' : ''}</td>
+      <td><div class="prog"><span class="dots">${[1, 2, 3, 4, 5].map(i => `<i class="${i < stage ? 'done' : i === stage ? 'now' : ''}"></i>`).join('')}</span><span>${stageNames[stage]}</span></div></td>
+      <td><div class="stores">${stores.map(s => `<i class="${storeCls(s)}" title="Store ${s}">${s}</i>`).join('')}</div></td>
+      <td>${status}</td>
+      <td class="r">${money(furn + tax + 120 + fee)}</td>
+      <td>${date}</td>
+      <td>${I.chevR.replace('<svg', '<svg class="chev"')}</td></tr>`;
+  }
+  function orders() {
+    const tabs = [['All active', 104, null], ['Ordered', 46, 1], ['Sourcing', 31, 2], ['At hub', 18, 3], ['Out for delivery', 9, 4]];
+    const filter = tabs[S.tab][2];
+    const rows = D.orders.filter(o => filter === null || o[5] === filter || (o[0] === 'SW-10482' && filter === 3));
+    return `<div class="page">
+      <div class="head"><div><h1>Orders &amp; sourcing</h1><p>Every paid order, where it is in the chain, and which stores it comes from.</p></div>
+        <div class="actions"><button type="button" class="btn" data-action="soon">${I.download}Export</button></div></div>
+      <div class="tabs" role="tablist">${tabs.map(([l, c], i) => `<button type="button" role="tab" aria-selected="${S.tab === i}" class="${S.tab === i ? 'on' : ''}" data-tab="${i}">${l}<span>${c}</span></button>`).join('')}</div>
+      <div class="filters"><button type="button" class="chip" data-action="soon">+ Store</button><button type="button" class="chip" data-action="soon">+ Plan</button><button type="button" class="chip" data-action="soon">+ Delivery date</button>
+        <span class="grow"></span><span class="count">Showing ${rows.length} of ${tabs[S.tab][1]}</span></div>
+      <div class="panel tbl-wrap"><table>
+        <thead><tr><th>Order</th><th>Plan</th><th>Stage</th><th>Stores</th><th>Status</th><th class="r">Customer total</th><th>Delivery</th><th></th></tr></thead>
+        <tbody>${rows.map(orderRow).join('')}</tbody></table></div>
     </div>`;
   }
 
-  // ---------- views ----------
-  function overview() {
-    const total = D.revenue.reduce((a, r) => a + r.value, 0);
-    return `<div class="page-head"><div><h1>Overview</h1><div class="sub">${S.date === 'oct29' ? 'Thursday, Oct 29' : 'Monday, Nov 2'} · all stores · month to date</div></div>
-      <div class="head-actions"><button class="btn" data-nav="orders" type="button">Open orders</button></div></div>
-      <div class="grid4">${D.kpis.map(k => `<div class="card kpi"><div class="label">${k.label}</div><div class="value">${k.value}</div><div class="note">${k.note}</div></div>`).join('')}</div>
-      <div class="card" style="margin-top:14px">
-        <div class="card-head"><h3>Service chain · live</h3><button class="action" data-nav="chain" type="button">Open Alex’s chain</button></div>
-        <div class="card-sub">Orders in each stage right now. One order ID links every stage.</div>
-        <div class="stages">${D.stages.map((s, i) => `<div class="stage ${i === 3 ? 'hot' : ''}"><div class="n">${String(i + 1).padStart(2, '0')} · ${s.name}</div><div class="c">${s.count}</div><div class="x">${s.note}</div></div>`).join('')}</div>
-      </div>
-      <div class="row2">
-        <div class="card"><div class="card-head"><h3>Revenue by stream · MTD</h3></div>
-          <div style="font-family:var(--brand);font-weight:300;font-size:30px;margin-top:6px">${money(total)}</div>
-          <div class="card-sub">of $412,600 GMV · furniture and tax are pass-through</div>
-          <div class="bars">${D.revenue.map(r => `<div class="${r.cls}" style="flex:${r.value}"></div>`).join('')}</div>
-          ${D.revenue.map(r => `<div class="legend-row"><i class="${r.cls}"></i>${r.name}<b>${money(r.value)} · ${Math.round(r.value / total * 100)}%</b></div>`).join('')}
-        </div>
-        <div class="card"><div class="card-head"><h3>Needs attention</h3><span class="muted" style="margin-left:auto">4</span></div>
-          ${D.alerts.map((a, i) => `<button class="alert ${a.order ? 'link' : ''}" type="button" ${a.order ? 'data-nav="chain"' : 'data-action="soon"'}><span class="ic ${i === 0 ? 'hot' : ''}">${i === 0 ? icon.warn : icon.info}</span><span><b>${a.title}</b><span>${a.body}</span></span></button>`).join('')}
-        </div>
-      </div>`;
-  }
-
-  function orders() {
-    const segs = ['All active · 104', 'Ordered · 46', 'Sourcing · 31', 'Hub · 18', 'Delivery · 9'];
-    const rows = D.orders.map(o => {
-      const [id, name, plus, furn, stores, stage, date] = o;
-      const isAlex = id === 'SW-10482';
-      const f = isAlex ? 2495 : furn;
-      const tax = isAlex ? 208 : Math.round(f * 0.0833);
-      const fee = plus ? 0 : Math.round(f * 0.08);
-      const st = isAlex ? (S.date === 'nov2' ? 'Delivered' : 'Hub') : stage;
-      const d = isAlex ? (S.date === 'nov2' ? winDate() : winDate()) : date;
-      return `<tr class="click ${isAlex ? 'alex' : ''}" ${isAlex ? 'data-nav="chain"' : 'data-action="soon"'}>
-        <td><b>${id}</b></td><td>${name}</td><td>${plus ? '<span class="chip plus">Plus</span>' : '<span class="muted">—</span>'}</td><td>${stores}</td>
-        <td><span class="chip ${st === 'Delivered' ? 'ok' : st === 'Hub' || st === 'Sourcing' ? 'now' : ''}">${st}</span></td>
-        <td class="mono">${money(f)}</td><td class="mono">${money(fee)}</td><td class="mono">${money(f + tax + 120 + fee)}</td><td>${d}</td>
-        <td>${isAlex ? '<button class="open-link" data-nav="chain" type="button">Open chain ›</button>' : '<span class="muted">Open chain ›</span>'}</td></tr>`;
-    }).join('');
-    return `<div class="page-head"><div><h1>Orders &amp; sourcing</h1><div class="sub">Every customer order, its stage and its store runs.</div></div>
-      <div class="head-actions"><button class="btn" data-action="soon" type="button">Export CSV</button></div></div>
-      <div class="filters"><div class="seg">${segs.map((s, i) => `<button class="${S.seg === i ? 'on' : ''}" data-seg="${i}" type="button">${s}</button>`).join('')}</div>
-        <div class="spacer"></div><select aria-label="Store"><option>All stores</option></select><select aria-label="Plan"><option>Plus · all</option></select></div>
-      <div class="card" style="padding:6px 8px">
-        <table><thead><tr><th>Order</th><th>Customer</th><th>Plan</th><th>Stores</th><th>Stage</th><th class="mono">Furniture</th><th class="mono">Service fee</th><th class="mono">Customer total</th><th>Delivery</th><th></th></tr></thead><tbody>${rows}</tbody></table>
-      </div>
-      <div class="foot-note">Customer total = furniture + tax + delivery &amp; install $120 + service fee (8% of furniture, $0 for Plus).</div>`;
-  }
-
-  function ledgerVals() {
+  // ---------- order (service chain) ----------
+  function ledger() {
     const v = { furn: 2495, tax: 208, del: 120, fee: 0, plus: 12, buyer: 42, hub: 18, crew: 58, refund: 0 };
-    if (S.ret) {
-      v.crew = 72;
-      if (S.ret.mode === 'refund') { const it = D.returnItems.find(i => i.id === S.ret.item); v.refund = it.price + it.tax; v.furnBack = it.price; v.taxBack = it.tax; }
-    }
+    if (S.ret) { v.crew = 72; if (S.ret.mode === 'refund') { const it = D.returnItems.find(i => i.id === S.ret.item); v.refund = it.price + it.tax; } }
+    v.revenue = v.del + v.plus; v.cost = v.buyer + v.hub + v.crew; v.contrib = v.revenue - v.cost; v.paid = v.furn + v.tax + v.del + v.fee - v.refund;
     return v;
   }
+  function order() {
+    const nov2 = S.date === 'nov2', w = win(), ret = S.ret, v = ledger();
+    const deliveredOn = w.day.split(', ')[1];
+    const st = nov2
+      ? [['Plan', 'Oct 18'], ['Order', 'Oct 24'], ['Sourcing', 'Oct 25–27'], ['Hub', 'Oct 29'], ['Delivery', deliveredOn], ['Aftercare', ret ? 'Resolved' : 'Today']]
+      : [['Plan', 'Oct 18'], ['Order', 'Oct 24'], ['Sourcing', 'Oct 25–27'], ['Hub', 'Today'], ['Delivery', winShort(w)], ['Aftercare', 'From Nov 2']];
+    const cur = nov2 ? 5 : 3;
+    const status = nov2 ? (ret ? '<span class="badge ok">Resolved</span>' : '<span class="badge bad">Issue reported</span>') : (S.modified ? '<span class="badge ok">Rescheduled</span>' : '<span class="badge warn">Held at hub</span>');
 
-  function chain() {
-    const nov2 = S.date === 'nov2';
-    const w = win();
-    const ret = S.ret;
-    const items = [
-      { k: 'Plan', st: 'done', chip: 'Done', date: 'Oct 18', body: 'Plan v3 saved · 7 items · Mini globe lamp chosen', link: 'Customer app · R7 Your plan is saved' },
-      { k: 'Order', st: 'done', chip: 'Done', date: 'Oct 24', body: 'Paid $2,807 · 3 store runs · service fee waived (Plus) · Oct 25: Mini globe sold out → Alex chose Slim shade on Apple Watch (+$16 → $2,823)', link: 'Apple Watch · out-of-stock alert' },
-      { k: 'Sourcing', st: 'done', chip: '3 store runs', date: 'Oct 25 – 27', runs: true, link: 'Orders & sourcing · sourcing board' },
-      nov2 ? { k: 'Hub', st: 'done', chip: 'Done', date: 'Oct 30', body: 'All three stores’ items received and checked · left as one drop', link: 'Hub & routes' }
-           : { k: 'Hub', st: 'current', chip: 'Now', date: 'Oct 29', body: 'Received A and B, checked, no damage · Store C bed arrives today 3 pm · held so everything leaves as one drop', link: 'Hub & routes' },
-      nov2 ? { k: 'Delivery & install', st: 'done', chip: 'Done', date: winDate(), body: `Delivered and installed ${winDate()}, 10:48 · Alex signed on Apple Watch`, link: 'Customer app · D1 Delivery overview' }
-           : { k: 'Delivery & install', st: 'next', chip: 'Scheduled', date: winDate(), body: `${w.route} · ${w.label.split(' · ').slice(1).join(' · ')}${w.plus ? '' : ''} · install bed and desk · 2-person crew`, link: 'Customer app · D1 Delivery overview' },
-      nov2 ? { k: 'Aftercare', st: 'current', chip: ret ? (ret.mode === 'exchange' ? 'Exchange' : 'Refund') : 'Now', date: 'Nov 2',
-               body: ret ? (ret.mode === 'exchange' ? `Exchange approved · new lamp and pickup ${ret.pickup.split(' · ').slice(0, 2).join(', ')} · ${D.returnItems.find(i => i.id === ret.item).store} rebuy today` : `Refund approved · ${money(ledgerVals().refund)} back to Alex · pickup ${ret.pickup.split(' · ').slice(0, 2).join(', ')}`)
-                         : 'Check-in Nov 2 · Alex reported a cracked lamp base · 1 photo · rated the crew 5 stars', link: 'Customer app · F1 Check-in' }
-           : { k: 'Aftercare', st: 'next', chip: 'Planned', date: 'Nov 2', body: 'Check-in “How does it feel at home?” · return window open until Nov 29', link: 'Customer app · F1 Check-in' }
-    ];
-    const v = ledgerVals();
-    const revenue = v.del + v.plus, cost = v.buyer + v.hub + v.crew, contrib = revenue - cost;
-    const paid = v.furn + v.tax + v.del + v.fee - v.refund;
-    const banner = S.banner ? `<div class="banner ${S.banner.kind}">${S.banner.kind === 'ok' ? icon.check : icon.info}<span>${S.banner.text}</span></div>`
-      : nov2 && !ret ? `<div class="banner info">${icon.info}<span>Nov 2 · check-in from Alex: “The Slim shade lamp arrived cracked.” · return window open until Nov 29</span></div>` : '';
-    const primary = !nov2 ? `<button class="btn primary ${step() === 3 ? 'hint' : ''}" data-action="modify" type="button">Modify order</button>`
-      : !ret ? `<button class="btn primary ${step() === 6 ? 'hint' : ''}" data-action="return" type="button">Start return or exchange</button>`
-      : `<button class="btn primary" data-nav="orders" type="button">Back to orders</button>`;
-    return `<div class="crumb">Service chain / ${nov2 ? 'Aftercare' : 'Hub'} / SW-10482</div>
-      <div class="page-head"><div><h1>SW-10482 · Alex</h1>
-        <div class="sub" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span class="chip plus">Plus</span>
-          <span class="chip ${nov2 ? 'ok' : 'now'}">${nov2 ? 'Delivered ' + winDate() : 'At hub · 2 of 3 stores in'}</span>
-          <span>Studio · New York · Budget $3,000 · Paid ${money(paid)} · ${nov2 ? 'Delivered and installed ' + winDate() : 'Delivery ' + w.label.replace(' · Plus priority', '')}</span></div></div>
-        <div class="head-actions">${primary}<button class="btn" data-action="soon" type="button">Message Alex</button></div></div>
-      ${banner}
-      <div class="chain-grid">
-        <div class="card"><h3>Chain timeline</h3><div class="card-sub">Every record this order touches, in order.</div>
-          <div class="timeline">${items.map(it => `<div class="tl-item ${it.st}">
-            <span class="dot"></span>
-            <div class="tl-top"><h4>${it.k}</h4><span class="chip ${it.st === 'done' ? 'ok' : it.st === 'current' ? 'now' : ''}">${it.chip}</span><span class="date">${it.date}</span></div>
-            ${it.runs ? `<div class="runs">${D.storeRuns.map(r => `<div class="run"><b>${r[0]}</b><span>${r[1]}</span><span class="p">${r[2]}</span><span class="s">${r[3]}</span></div>`).join('')}</div>` : `<div class="tl-body">${it.body}</div>`}
-            <div class="tl-link">↗ ${it.link}</div></div>`).join('')}</div>
-        </div>
-        <div style="display:grid;gap:16px">
-          <div class="card ledger"><h3>Money ledger</h3><div class="card-sub" style="margin-bottom:0">What the customer paid, what passes through, and what Shopwise earns.</div>
-            <div class="sec-t">CUSTOMER PAID</div>
-            <div class="l"><span>Furniture</span><span>${money(v.furn)}</span></div>
-            <div class="l"><span>Tax</span><span>${money(v.tax)}</span></div>
-            <div class="l"><span>Delivery &amp; install</span><span>${money(v.del)}</span></div>
-            <div class="l"><span>Service fee · Plus</span><span>$0</span></div>
-            ${v.refund ? `<div class="l changed"><span>Refund · lamp</span><span>−${money(v.refund)}</span></div>` : ''}
-            <div class="l tot"><span>Total</span><span>${money(paid)}</span></div>
-            <div class="sec-t">PASS-THROUGH</div>
-            <div class="l ${v.refund ? 'changed' : ''}"><span>Bought at stores A · B · C</span><span>${money(v.furn - (v.furnBack || 0))}</span></div>
-            <div class="l ${v.refund ? 'changed' : ''}"><span>Tax remitted</span><span>${money(v.tax - (v.taxBack || 0))}</span></div>
-            <div class="sec-t">SHOPWISE REVENUE</div>
-            <div class="l"><span>Delivery &amp; install</span><span>${money(v.del)}</span></div>
-            <div class="l"><span>Plus · October share</span><span>${money(v.plus)}</span></div>
-            <div class="l tot"><span>Revenue</span><span>${money(revenue)}</span></div>
-            <div class="sec-t">COST TO SERVE</div>
-            <div class="l"><span>Buyer run · 3 stores</span><span>${money(v.buyer)}</span></div>
-            <div class="l"><span>Hub handling</span><span>${money(v.hub)}</span></div>
-            <div class="l ${S.ret ? 'changed' : ''}"><span>${S.ret ? 'Crew · delivery + return pickup' : 'Crew · delivery &amp; install'}</span><span>${money(v.crew)}</span></div>
-            <div class="l tot"><span>Cost</span><span>${money(cost)}</span></div>
-            <div class="contrib"><span>Contribution</span><span>${contrib > 0 ? '+' : ''}${money(contrib)}</span></div>
-          </div>
-          <div class="card activity"><h3>Activity</h3>
-            ${S.activity.slice(0, 5).map((a, i) => `<div class="a ${i === S.fresh ? 'new' : ''}"><small>${a.t}</small>${a.s}</div>`).join('')}
-          </div>
-        </div>
-      </div>`;
+    const notice = ret
+      ? `<div class="notice ok">${I.check}<span><b>${ret.mode === 'exchange' ? 'Exchange approved.' : `Refund of ${money(v.refund)} approved.`}</b> ${ret.mode === 'exchange' ? `The crew brings a new lamp and collects the cracked one on ${ret.pickup.replace(' · ', ', ')}.` : `Pickup on ${ret.pickup.replace(' · ', ', ')}.`}${ret.notify ? ' Alex was notified.' : ''}</span></div>`
+      : nov2 ? `<div class="notice bad">${I.alert}<span><b>Alex reported the lamp arrived cracked.</b> Return window is open until Nov 29.</span></div>`
+      : S.modified ? `<div class="notice ok">${I.check}<span><b>Delivery moved to ${w.day}, ${w.time}.</b>${S.draftModify.notify ? ' Alex was notified on iPhone and Apple Watch.' : ''}</span></div>`
+      : `<div class="notice warn">${I.alert}<span><b>Store C’s bed reaches the hub at 3 pm today.</b> The Thu, Oct 30 window is tight. Move delivery so Alex still gets everything in one drop.</span></div>`;
+
+    const primary = ret ? `<button type="button" class="btn dark" data-nav="orders">Back to orders</button>`
+      : nov2 ? `<button type="button" class="btn primary${hint(6)}" data-action="return">Start return or exchange</button>`
+      : `<button type="button" class="btn primary${hint(3)}" data-action="modify">Modify order</button>`;
+
+    const runs = `<section class="panel"><div class="panel-h"><h3>Store runs</h3><span class="meta">Bought by Shopwise, checked at the hub</span></div>
+      <table class="runs"><tbody>${D.storeRuns.map(r => {
+        const late = r.late && !nov2 && !S.modified;
+        const badge = nov2 || S.modified || !r.late ? '<span class="badge ok">At hub</span>' : '<span class="badge warn">Arrives 3 pm</span>';
+        return `<tr><td class="s"><b>${r.store}</b><span>${r.dept}</span></td><td class="it">${r.items}${r.note ? `<span>${r.note}</span>` : ''}</td><td class="r num">${money(r.amount)}</td><td>${badge}</td></tr>`; }).join('')}</tbody></table></section>`;
+
+    const delivery = `<section class="panel"><div class="panel-h"><h3>Delivery &amp; install</h3>${nov2 ? '<span class="badge ok">Delivered</span>' : S.modified ? '<span class="badge accent">Rescheduled</span>' : '<span class="badge plain">Scheduled</span>'}</div>
+      <div class="panel-b"><div class="facts">
+        <div><small>${nov2 ? 'Delivered' : 'Window'}</small><b>${nov2 ? `${w.day}, 10:48` : `${w.day}, ${w.time}`}</b></div>
+        <div><small>Route</small><b>${w.route}${w.plus ? ' · Plus priority' : ''}</b></div>
+        <div><small>Crew</small><b>${nov2 ? 'Ken + 1 · signed on Watch' : 'Ken + 1'}</b></div></div>
+        <div class="tasks"><span class="badge plain">7 pieces</span><span class="badge plain">Install bed</span><span class="badge plain">Install desk</span><span class="badge plain">Third floor, elevator</span></div></div></section>`;
+
+    const aftercare = nov2 ? `<section class="panel"><div class="panel-h"><h3>Aftercare</h3><span class="meta">Check-in, Nov 2 at 19:34</span></div>
+      <div class="panel-b"><div class="quote"><div class="ph">${I.lamp}</div><div><q>The Slim shade lamp arrived cracked.</q><small>Alex · 1 photo · rated the crew <span class="stars" aria-label="5 stars">★★★★★</span></small></div></div>
+      ${ret ? `<div class="facts" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line-2)"><div><small>Resolution</small><b>${ret.mode === 'exchange' ? 'Exchange, new lamp' : `Refund ${money(v.refund)}`}</b></div><div><small>Crew visit</small><b>${ret.pickup.replace(' · ', ', ')}</b></div><div><small>Alex pays</small><b>$0</b></div></div>` : ''}</div></section>` : '';
+
+    const econCls = v.contrib > 0 ? 'pos' : 'zero';
+    return `<div class="page">
+      <div class="order-head"><div><h1>SW-10482 ${status}</h1>
+        <div class="who"><span class="plus">PLUS</span><span>Alex · Studio in New York · budget $3,000</span></div></div>
+        <div class="actions"><button type="button" class="btn" data-action="soon">${I.msg}Message Alex</button>${primary}</div></div>
+      <div class="route" aria-label="Service chain">${st.map(([k, d], i) => `<div class="stn ${i < cur || (ret && i === 5) ? 'done' : i === cur ? 'now' : 'next'}"><span class="dot"></span><div class="k">${k}</div><div class="d">${d}</div></div>`).join('')}</div>
+      ${notice}
+      <div class="o-grid">
+        <div class="stack">${nov2 ? aftercare + delivery + runs : runs + delivery}</div>
+        <div class="stack">
+          <section class="panel money"><div class="panel-h"><h3>Customer paid</h3></div><div class="panel-b">
+            <div class="big">${money(v.paid)}</div><div class="cap">$2,807 at checkout, +$16 for the lamp swap${v.refund ? `, ${money(-v.refund)} refund` : ''}</div>
+            <div class="lines"><div class="l"><span>Furniture</span><span>${money(v.furn)}</span></div><div class="l"><span>Tax</span><span>${money(v.tax)}</span></div>
+              <div class="l"><span>Delivery &amp; install</span><span>${money(v.del)}</span></div><div class="l"><span>Service fee</span><span>$0 with Plus</span></div>
+              ${v.refund ? `<div class="l chg"><span>Lamp refund</span><span>${money(-v.refund)}</span></div>` : ''}</div></div></section>
+          <section class="panel"><div class="panel-h"><h3>What Shopwise earns</h3></div><div class="panel-b">
+            <div class="econ"><div><small>Revenue</small><b>${money(v.revenue)}</b></div><div><small>Cost to serve</small><b>${money(v.cost)}</b></div><div class="${econCls}"><small>Contribution</small><b>${v.contrib > 0 ? '+' : ''}${money(v.contrib)}</b></div></div>
+            <details class="more"><summary>How it adds up</summary><div class="lines">
+              <div class="l"><span>Delivery &amp; install</span><span>${money(v.del)}</span></div><div class="l"><span>Plus, October share</span><span>${money(v.plus)}</span></div>
+              <div class="l"><span>Buyer run, 3 stores</span><span>${money(-v.buyer)}</span></div><div class="l"><span>Hub handling</span><span>${money(-v.hub)}</span></div>
+              <div class="l ${S.ret ? 'chg' : ''}"><span>${S.ret ? 'Crew, delivery and return visit' : 'Crew, delivery and install'}</span><span>${money(-v.crew)}</span></div></div></details></div></section>
+          <section class="panel"><div class="panel-h"><h3>Activity</h3></div><div class="panel-b">
+            <ul class="feed">${S.activity.slice(0, 6).map((a, i) => `<li class="${i === 0 && S.fresh ? 'new' : ''}"><small>${a.t}</small>${a.s}</li>`).join('')}</ul></div></section>
+        </div></div></div>`;
   }
 
-  function modifySheet() {
-    const m = S.draftModify;
-    const sel = D.windows.find(w => w.id === m.win);
-    const disabled = m.type !== 'window' || m.win === S.win;
-    return `<div class="dim" data-action="dim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mtitle" data-stop>
-      <h2 id="mtitle">Modify order · SW-10482</h2><div class="s-sub">Alex · 3 stores · paid $2,823 · Plus member</div>
-      <div class="form-row"><span class="lbl">What needs to change?</span><div class="radios">
-        ${[['window', 'Delivery window'], ['swap', 'Swap an item'], ['remove', 'Remove an item']].map(([v, l]) => `<label><input type="radio" name="mtype" value="${v}" ${m.type === v ? 'checked' : ''}> ${l}</label>`).join('')}
-      </div></div>
-      <div class="divider"></div>
-      ${m.type === 'window' ? `
-        <div class="form-row"><span class="lbl">Current</span><b>${win().label.replace(' · Plus priority', '')} · ${win().route}</b></div>
-        <div class="form-row"><label for="mwin">New window</label><select id="mwin">${D.windows.filter(w => w.id !== S.win).map(w => `<option value="${w.id}" ${m.win === w.id ? 'selected' : ''}>${w.label}</option>`).join('')}</select></div>
-        <div class="form-row"><label for="mreason">Reason</label><select id="mreason">${D.reasons.map(r => `<option ${m.reason === r ? 'selected' : ''}>${r}</option>`).join('')}</select></div>
-        <div class="impact"><b>Impact</b>
-          <div>Price · no change ($2,823)${sel && sel.plus ? ' · Plus priority window, no extra fee' : ''}</div>
-          <div>Crew · ${sel ? sel.route : ''} · 2-person · install bed and desk</div>
-          <div>Still one drop — all three stores’ items are at the hub by Oct 30</div></div>`
-      : `<div class="impact"><b>Not in this prototype</b><div>The demo covers changing the delivery window. Item swaps follow the same sheet with a price-difference line.</div></div>`}
-      <label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="mnotify" ${m.notify ? 'checked' : ''}> Notify Alex on iPhone and Apple Watch</label>
-      <div class="sheet-foot"><span class="grow"></span><button class="btn" data-action="close" type="button">Cancel</button>
-        <button class="btn primary" data-action="update" type="button" ${disabled ? 'disabled style="opacity:.5;cursor:default"' : ''}>Update order</button></div>
-    </div></div>`;
+  // ---------- drawers ----------
+  const sw = (id, on, label) => `<label class="toggle"><span>${label}</span><span class="switch"><input type="checkbox" id="${id}" ${on ? 'checked' : ''}><i></i></span></label>`;
+  function modifyDrawer() {
+    const m = S.draftModify, cur = win(), sel = D.windows.find(w => w.id === m.win);
+    const ok = m.type === 'window' && m.win !== S.win;
+    return `<div class="scrim" data-action="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dt">
+      <div class="drawer-h"><div><h2 id="dt">Modify order</h2><p>SW-10482 · Alex · paid $2,823</p></div><button type="button" class="icon-btn" data-action="close" aria-label="Close">${I.x}</button></div>
+      <div class="drawer-b">
+        <div class="field"><span class="lbl">What needs to change?</span><div class="pills">${[['window', 'Delivery window'], ['swap', 'Swap an item'], ['remove', 'Remove an item']].map(([k, l]) => `<button type="button" class="${m.type === k ? 'on' : ''}" data-mtype="${k}">${l}</button>`).join('')}</div></div>
+        ${m.type === 'window' ? `
+        <div class="current"><span>Current window</span><b>${cur.day}, ${cur.time} · ${cur.route}</b></div>
+        <div class="field"><span class="lbl">New window</span><div class="opts">${D.windows.filter(w => w.id !== S.win).map(w => `<button type="button" class="opt ${m.win === w.id ? 'on' : ''}" data-win="${w.id}"><span class="rd"></span><span><b>${w.day}, ${w.time}</b><span>${w.route} · ${w.note}</span></span>${w.rec ? '<span class="badge accent plain">Recommended</span>' : ''}</button>`).join('')}</div></div>
+        <div class="field"><label for="mreason">Reason</label><select id="mreason">${D.reasons.map(r => `<option ${m.reason === r ? 'selected' : ''}>${r}</option>`).join('')}</select></div>
+        <div class="field"><span class="lbl">What changes</span><div class="impact">
+          <div class="r"><span>Price</span><b>No change, $2,823${sel.plus ? ' (Plus priority is free)' : ''}</b></div>
+          <div class="r"><span>Crew</span><b>${sel.route}, Ken + 1</b></div>
+          <div class="r"><span>Drop</span><b>Still one drop from all three stores</b></div></div></div>
+        ${sw('mnotify', m.notify, 'Notify Alex on iPhone and Apple Watch')}`
+        : `<div class="current"><span>This prototype covers changing the delivery window.</span></div>`}
+      </div>
+      <div class="drawer-f"><button type="button" class="btn" data-action="close">Cancel</button><button type="button" class="btn primary${ok ? hint(4) : ''}" data-action="update" ${ok ? '' : 'disabled'}>Update order</button></div></aside>`;
+  }
+  function returnDrawer() {
+    const r = S.draftReturn, it = D.returnItems.find(i => i.id === r.item), refund = it.price + it.tax;
+    return `<div class="scrim" data-action="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="rt">
+      <div class="drawer-h"><div><h2 id="rt">Return or exchange</h2><p>SW-10482 · Alex · window open until Nov 29</p></div><button type="button" class="icon-btn" data-action="close" aria-label="Close">${I.x}</button></div>
+      <div class="drawer-b">
+        <div class="field"><span class="lbl">Item</span><div class="opts">${D.returnItems.map(i => `<button type="button" class="opt ${r.item === i.id ? 'on' : ''}" data-item="${i.id}"><span class="rd"></span><span><b>${i.name}</b><span>${i.store}</span></span><span class="right">${money(i.price)}</span></button>`).join('')}</div></div>
+        <div class="field"><span class="lbl">Reason</span><div class="pills">${['Arrived damaged', 'Changed mind', 'Doesn’t fit'].map(x => `<button type="button" class="${r.reason === x ? 'on' : ''}" data-reason="${x}">${x}</button>`).join('')}</div></div>
+        <div class="field"><span class="lbl">From Alex</span><div class="evidence"><span class="ph">${I.lamp}</span><span>1 photo, Nov 2 at 19:34<br>“The Slim shade lamp arrived cracked.”</span></div></div>
+        <div class="field"><span class="lbl">Resolution</span><div class="opts">
+          <button type="button" class="opt ${r.mode === 'exchange' ? 'on' : ''}" data-mode="exchange"><span class="rd"></span><span><b>Exchange</b><span>A new ${it.name} on the same visit</span></span><span class="right">$0</span></button>
+          <button type="button" class="opt ${r.mode === 'refund' ? 'on' : ''}" data-mode="refund"><span class="rd"></span><span><b>Refund</b><span>${money(it.price)} + ${money(it.tax)} tax to the original card</span></span><span class="right">${money(refund)}</span></button></div></div>
+        <div class="field"><label for="rpick">Crew visit</label><select id="rpick">${['Tue, Nov 4 · 10 am–12 pm', 'Wed, Nov 5 · 2–4 pm'].map(p => `<option ${r.pickup === p ? 'selected' : ''}>${p}</option>`).join('')}</select></div>
+        <div class="field"><span class="lbl">What changes</span><div class="impact">
+          <div class="r"><span>Alex pays</span><b>$0, pickup is free with Plus</b></div>
+          <div class="r"><span>${it.store}</span><b>${r.mode === 'exchange' ? `Rebuy today, damage claim opened` : `Return credit ${money(it.price)} to Shopwise`}</b></div>
+          <div class="r"><span>Contribution</span><b class="up">+$14 → $0 (extra crew visit)</b></div></div></div>
+        ${sw('rnotify', r.notify, 'Notify Alex on iPhone and Apple Watch')}
+      </div>
+      <div class="drawer-f"><button type="button" class="btn" data-action="close">Cancel</button><button type="button" class="btn primary${hint(7)}" data-action="approve">Approve ${r.mode}</button></div></aside>`;
   }
 
-  function returnSheet() {
-    const r = S.draftReturn; const it = D.returnItems.find(i => i.id === r.item);
-    const refundAmt = it.price + it.tax;
-    return `<div class="dim" data-action="dim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rtitle" data-stop>
-      <h2 id="rtitle">Return or exchange · SW-10482</h2><div class="s-sub">Alex · Plus member · return window open until Nov 29</div>
-      <div class="form-row"><label for="ritem">Item</label><select id="ritem">${D.returnItems.map(i => `<option value="${i.id}" ${r.item === i.id ? 'selected' : ''}>${i.label}</option>`).join('')}</select></div>
-      <div class="form-row"><span class="lbl">Reason</span><div class="radios">${['Damaged on arrival', 'Changed mind', 'Doesn’t fit'].map(x => `<label><input type="radio" name="rreason" value="${x}" ${r.reason === x ? 'checked' : ''}> ${x}</label>`).join('')}</div></div>
-      <div class="form-row"><span class="lbl">Evidence</span><div style="display:flex;gap:12px;align-items:center"><div class="photo">${icon.lamp}</div><span>1 photo from Alex · Nov 2, 19:34</span></div></div>
-      <div class="form-row"><span class="lbl">Resolution</span><div class="seg"><button class="${r.mode === 'exchange' ? 'on' : ''}" data-mode="exchange" type="button">Exchange</button><button class="${r.mode === 'refund' ? 'on' : ''}" data-mode="refund" type="button">Refund ${money(refundAmt)}</button></div></div>
-      <div class="form-row"><label for="rpick">Pickup</label><select id="rpick">${['Nov 4 · 10–12 · swap on the same visit', 'Nov 5 · 2–4 pm'].map(p => `<option ${r.pickup === p ? 'selected' : ''}>${p}</option>`).join('')}</select></div>
-      <div class="impact"><b>Impact</b>
-        ${r.mode === 'exchange'
-          ? `<div>Alex pays $0 · pickup is free with Plus</div><div>${it.store} · rebuy ${it.label.split(' · ')[0]} (${money(it.price)}) today · damage claim opened</div>`
-          : `<div>Alex gets ${money(refundAmt)} back (${money(it.price)} + ${money(it.tax)} tax) · pickup is free with Plus</div><div>${it.store} · return credit ${money(it.price)} to Shopwise</div>`}
-        <div>Cost to serve +$14 (return pickup) · this order’s contribution goes to $0</div></div>
-      <label style="display:flex;gap:8px;align-items:center;margin:6px 0"><input type="checkbox" id="rnotify" ${r.notify ? 'checked' : ''}> Notify Alex on iPhone and Apple Watch</label>
-      <div class="sheet-foot"><span class="grow"></span><button class="btn" data-action="close" type="button">Cancel</button>
-        <button class="btn primary" data-action="approve" type="button">Approve ${r.mode}</button></div>
-    </div></div>`;
-  }
-
-  function placeholder(name) {
-    return `<div class="placeholder"><div><h1>${name}</h1><p>Not part of this prototype. The workflow runs through Overview → Orders &amp; sourcing → Service chain.</p>
-      <button class="btn primary" data-nav="overview" type="button">Back to Overview</button></div></div>`;
+  function placeholder() {
+    return `<div class="page empty"><div><h1>Not in this prototype</h1><p>This walkthrough runs through Overview, Orders &amp; sourcing and one order’s service chain.</p><button type="button" class="btn primary" data-nav="overview">Go to Overview</button></div></div>`;
   }
 
   function render() {
-    const view = { overview, orders, chain }[S.view];
-    const names = { care: 'Care & returns', finance: 'Finance', settings: 'Settings' };
-    $app.innerHTML = sidebar() + `<section class="main">${toolbar()}<div class="content" id="content">${view ? view() : placeholder(names[S.view])}</div></section>`
-      + (S.sheet === 'modify' ? modifySheet() : S.sheet === 'return' ? returnSheet() : '');
+    const view = { overview, orders, order }[S.view] || placeholder;
+    const y = document.getElementById('content')?.scrollTop || 0;
+    $app.innerHTML = side() + `<div class="main">${top()}<main class="content" id="content">${view()}</main></div>`
+      + (S.drawer === 'modify' ? modifyDrawer() : S.drawer === 'return' ? returnDrawer() : '');
+    document.getElementById('content').scrollTop = render.keep ? y : 0; render.keep = false;
     renderGuide();
   }
+  const rerender = () => { render.keep = true; render(); };
 
-  function toast(msg) { $toast.textContent = msg; $toast.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => $toast.classList.remove('show'), 2200); }
-  function go(view) { S.view = view; S.menu = false; S.fresh = -1; render(); const c = document.getElementById('content'); if (c) c.scrollTop = 0; }
+  function toast(msg) { $toast.innerHTML = I.check + `<span>${msg}</span>`; $toast.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => $toast.classList.remove('show'), 2400); }
+  function go(view) { if (view === 'chain') view = 'order'; S.view = view; S.fresh = false; render(); }
 
   // ---------- events ----------
-  $app.addEventListener('click', e => {
-    const t = e.target.closest('[data-nav],[data-action],[data-date],[data-seg],[data-mode]');
-    if (e.target.closest('[data-stop]') && !t) return;
-    if (!t) { if (S.menu) { S.menu = false; render(); } return; }
-    if (t.dataset.nav) { go(t.dataset.nav); return; }
-    if (t.dataset.seg) { S.seg = +t.dataset.seg; render(); return; }
-    if (t.dataset.mode) { S.draftReturn.mode = t.dataset.mode; render(); return; }
-    if (t.dataset.date) {
-      S.date = t.dataset.date; S.menu = false; S.banner = null; S.fresh = -1;
-      if (S.date === 'nov2') { S.view = 'chain'; if (!S.modified) S.win = 'oct30'; toast('Jumped to Nov 2 · after delivery'); }
-      render(); return;
+  document.addEventListener('click', e => {
+    if (e.target.closest('#restart')) { S = initial(); render(); toast('Demo restarted'); return; }
+    const t = e.target.closest('[data-nav],[data-action],[data-date],[data-tab],[data-mode],[data-win],[data-mtype],[data-item],[data-reason]');
+    if (!t) return;
+    const d = t.dataset;
+    if (d.nav) return go(d.nav);
+    if (d.tab) { S.tab = +d.tab; return rerender(); }
+    if (d.win) { S.draftModify.win = d.win; return rerender(); }
+    if (d.mtype) { S.draftModify.type = d.mtype; return rerender(); }
+    if (d.item) { S.draftReturn.item = d.item; return rerender(); }
+    if (d.reason) { S.draftReturn.reason = d.reason; return rerender(); }
+    if (d.mode) { S.draftReturn.mode = d.mode; return rerender(); }
+    if (d.date) {
+      if (S.date === d.date) return;
+      S.date = d.date; S.fresh = false; S.drawer = null;
+      if (S.date === 'nov2') { S.view = 'order'; S.activity.unshift({ t: 'Oct 31, 10:48', s: 'Crew delivered and installed 7 pieces. Alex signed on Apple Watch' }, { t: 'Nov 2, 19:34', s: 'Alex reported the lamp arrived cracked (check-in, 1 photo)' }); S.fresh = true; }
+      return render();
     }
-    const a = t.dataset.action;
-    if (a === 'menu') { S.menu = !S.menu; render(); }
-    else if (a === 'soon') toast('Not part of this prototype');
-    else if (a === 'modify') { S.sheet = 'modify'; render(); }
-    else if (a === 'return') { S.sheet = 'return'; render(); }
-    else if (a === 'close' || (a === 'dim' && e.target === t)) { S.sheet = null; render(); }
+    const a = d.action;
+    if (a === 'soon') toast('Not part of this prototype');
+    else if (a === 'modify') { S.drawer = 'modify'; rerender(); }
+    else if (a === 'return') { S.drawer = 'return'; rerender(); }
+    else if (a === 'close') { S.drawer = null; rerender(); }
     else if (a === 'update') {
-      const m = S.draftModify; if (m.type !== 'window') return;
-      S.win = m.win; S.modified = true; S.sheet = null;
-      const w = win();
-      S.activity.unshift({ t: 'Now', s: `Maya moved delivery to ${w.label.replace(' · Plus priority', '')} · ${m.reason}${m.notify ? ' · Alex notified' : ''}` }); S.fresh = 0;
-      S.banner = { kind: 'ok', text: `Order updated · delivery moved to ${w.label.replace(' · Plus priority', '')}${m.notify ? ' · Alex was notified on iPhone and Apple Watch' : ''}` };
-      render(); toast('Order updated');
+      const m = S.draftModify; if (m.type !== 'window' || m.win === S.win) return;
+      S.win = m.win; S.modified = true; S.drawer = null; const w = win();
+      S.activity.unshift({ t: 'Just now', s: `Maya moved delivery to ${w.day}, ${w.time}. ${m.reason}${m.notify ? '. Alex notified' : ''}` }); S.fresh = true;
+      rerender(); toast('Order updated');
     }
     else if (a === 'approve') {
-      const r = S.draftReturn; S.ret = { ...r }; S.sheet = null;
-      const it = D.returnItems.find(i => i.id === r.item); const name = it.label.split(' · ')[0];
-      S.activity.unshift({ t: 'Now', s: r.mode === 'exchange' ? `Maya approved an exchange for the ${name.toLowerCase()} · ${it.store} rebuy${r.notify ? ' · Alex notified' : ''}` : `Maya approved a ${money(it.price + it.tax)} refund for the ${name.toLowerCase()}${r.notify ? ' · Alex notified' : ''}` }); S.fresh = 0;
-      S.banner = { kind: 'ok', text: r.mode === 'exchange' ? `Exchange approved · pickup and new ${name.toLowerCase()} ${r.pickup.split(' · ').slice(0, 2).join(', ')}${r.notify ? ' · Alex notified' : ''}` : `Refund approved · ${money(it.price + it.tax)} back to Alex · pickup ${r.pickup.split(' · ').slice(0, 2).join(', ')}` };
-      render(); toast(r.mode === 'exchange' ? 'Exchange approved' : 'Refund approved');
+      const r = S.draftReturn; S.ret = { ...r }; S.drawer = null;
+      const it = D.returnItems.find(i => i.id === r.item);
+      S.activity.unshift({ t: 'Just now', s: r.mode === 'exchange' ? `Maya approved an exchange for the ${it.name.toLowerCase()}. ${it.store} rebuy today${r.notify ? '. Alex notified' : ''}` : `Maya approved a ${money(it.price + it.tax)} refund for the ${it.name.toLowerCase()}${r.notify ? '. Alex notified' : ''}` }); S.fresh = true;
+      rerender(); toast(r.mode === 'exchange' ? 'Exchange approved' : 'Refund approved');
     }
   });
-  $app.addEventListener('change', e => {
-    const id = e.target.id, n = e.target.name;
-    if (n === 'mtype') S.draftModify.type = e.target.value;
-    else if (id === 'mwin') S.draftModify.win = e.target.value;
-    else if (id === 'mreason') S.draftModify.reason = e.target.value;
+  document.addEventListener('change', e => {
+    const id = e.target.id;
+    if (id === 'mreason') S.draftModify.reason = e.target.value;
     else if (id === 'mnotify') S.draftModify.notify = e.target.checked;
-    else if (id === 'ritem') S.draftReturn.item = e.target.value;
-    else if (n === 'rreason') S.draftReturn.reason = e.target.value;
     else if (id === 'rpick') S.draftReturn.pickup = e.target.value;
     else if (id === 'rnotify') S.draftReturn.notify = e.target.checked;
     else return;
-    render();
+    rerender();
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && (S.sheet || S.menu)) { S.sheet = null; S.menu = false; render(); } });
-  document.getElementById('resetBtn').addEventListener('click', () => { S = initial(); render(); toast('Restarted'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.drawer) { S.drawer = null; rerender(); } });
 
   render();
 })();

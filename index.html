@@ -3,26 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Shopwise GM Console · Prototype</title>
-  <meta name="description" content="Clickable prototype of the Shopwise GM console: dashboard → orders → service chain → modify order → return or exchange.">
+  <title>Shopwise GM Console</title>
+  <meta name="description" content="Clickable prototype of the Shopwise GM console: dashboard, orders and sourcing, service chain, modify an order, handle a return or exchange.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="guide" aria-live="polite">
-    <div class="guide__brand"><span class="logo-dot">S</span> Shopwise · GM console prototype</div>
-    <div class="guide__step" id="guide"></div>
-    <div class="guide__actions">
-      <button class="link-btn" id="resetBtn" type="button">Restart</button>
-    </div>
-  </header>
-
-  <main class="desk">
-    <div class="window" id="app" role="application" aria-label="Shopwise GM console"></div>
-  </main>
-
+  <div class="app" id="app" aria-label="Shopwise GM console"></div>
+  <div class="guide" id="guide" aria-live="polite"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="data.js"></script>
   <script src="app.js"></script>
