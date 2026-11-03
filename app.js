@@ -207,7 +207,7 @@
       <div class="order-head"><div><h1>SW-10482 ${status}</h1>
         <div class="who"><span class="plus">PLUS</span><span>Alex · Studio in New York · budget $3,000</span></div></div>
         <div class="actions"><button type="button" class="btn" data-action="soon">${I.msg}Message Alex</button>${primary}</div></div>
-      <div class="route" aria-label="Service chain">${st.map(([k, d], i) => `<div class="stn ${i < cur || (ret && i === 5) ? 'done' : i === cur ? 'now' : 'next'}"><span class="dot"></span><div class="k">${k}</div><div class="d">${d}</div></div>`).join('')}</div>
+      <div class="route" aria-label="Service chain">${st.map(([k, d], i) => `<div class="stn ${i < cur || (ret && i === 5) ? 'done' : i === cur ? 'now' : 'next'}"><span class="dot">${i < cur || (ret && i === 5) ? '<svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-4.9" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span><div class="k">${k}</div><div class="d">${d}</div></div>`).join('')}</div>
       ${notice}
       <div class="o-grid">
         <div class="stack">${nov2 ? aftercare + delivery + runs : runs + delivery}</div>

@@ -127,7 +127,7 @@ h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 500; letter-sp
 .pipe .st::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--line); }
 .pipe .st:first-child::before { border-radius: 4px 0 0 4px; }
 .pipe .st:last-child::before { border-radius: 0 4px 4px 0; }
-.pipe .st.risk::before { background: linear-gradient(90deg, var(--line) 0 60%, var(--warn) 60%); }
+.pipe .st.risk::after { content: ''; position: absolute; top: 0; right: 0; width: 40%; height: 4px; background: var(--warn); }
 .pipe .st + .st { padding-left: 12px; border-left: 1px solid var(--line-2); }
 .pipe .n { color: var(--muted); font-size: 12.5px; }
 .pipe .c { font-family: var(--display); font-size: 24px; font-variant-numeric: tabular-nums; margin: 2px 0; }
@@ -191,12 +191,11 @@ td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; }
 .route .stn { position: relative; padding-top: 30px; }
 .route .stn::before { content: ''; position: absolute; top: 10px; left: 0; right: 0; height: 3px; background: var(--line); }
 .route .stn.done::before { background: var(--graphite); }
-.route .stn.now::before { background: linear-gradient(90deg, var(--graphite) 0 0%, var(--line) 0%); }
 .route .stn:first-child::before { left: 10px; }
 .route .stn:last-child::before { right: calc(100% - 10px); }
 .route .dot { position: absolute; top: 2px; left: 0; width: 19px; height: 19px; border-radius: 50%; background: var(--paper); border: 3px solid var(--line); }
 .route .stn.done .dot { background: var(--graphite); border-color: var(--graphite); }
-.route .stn.done .dot::after { content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.route .dot svg { position: absolute; left: 1px; top: 1px; }
 .route .stn.now .dot { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 6px rgba(179,102,54,.16); }
 .route .k { font-weight: 600; font-size: 13.5px; }
 .route .stn.next .k { color: var(--muted); font-weight: 500; }
