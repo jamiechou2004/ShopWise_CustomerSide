@@ -38,9 +38,9 @@ window.SW = {
     ['SW-10465', 'Sam R.', false, 1540, 'C · D', 'Hub', 'Oct 30']
   ],
   storeRuns: [
-    ['Store A · Living', 'Sofa, coffee table', '$1,240', 'Bought Oct 25'],
+    ['Store A · Living', 'Sofa, coffee table', '$850', 'Bought Oct 25'],
     ['Store B · Lighting', 'Slim shade lamp (swap)', '$95', 'Bought Oct 25'],
-    ['Store C · Bedroom', 'Bed, desk & chair', '$1,160', 'Bought Oct 27']
+    ['Store C · Bedroom', 'Bed, wardrobe, desk & chair', '$1,550', 'Bought Oct 27']
   ],
   windows: [
     { id: 'oct30', label: 'Oct 30 · 2–4 pm', route: 'Route 2', plus: false, current: true },
@@ -50,6 +50,6 @@ window.SW = {
   reasons: ['Store C bed arrives late', 'Customer asked to reschedule', 'Crew capacity'],
   returnItems: [
     { id: 'lamp', label: 'Slim shade lamp · $95 · Store B', price: 95, tax: 8, store: 'Store B' },
-    { id: 'table', label: 'Coffee table · $260 · Store A', price: 260, tax: 22, store: 'Store A' }
+    { id: 'table', label: 'Coffee table · $150 · Store A', price: 150, tax: 13, store: 'Store A' }
   ]
 };

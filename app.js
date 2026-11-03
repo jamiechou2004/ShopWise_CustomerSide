@@ -31,7 +31,7 @@
     activity: [
       { t: 'Today 9:12', s: 'Hub received Store B lamp · checked' },
       { t: 'Oct 28 16:40', s: 'Store A sofa and table received' },
-      { t: 'Oct 27 11:05', s: 'Buyer bought bed, desk & chair at Store C' },
+      { t: 'Oct 27 11:05', s: 'Buyer bought bed, wardrobe, desk & chair at Store C' },
       { t: 'Oct 26 18:02', s: 'Alex chose Slim shade lamp on Apple Watch (+$16)' },
       { t: 'Oct 24 20:31', s: 'Alex paid $2,807 in the app' }
     ],
@@ -159,8 +159,8 @@
     const w = win();
     const ret = S.ret;
     const items = [
-      { k: 'Plan', st: 'done', chip: 'Done', date: 'Oct 18', body: 'Plan v3 saved · 5 items · Mini globe lamp chosen ($2,807 at checkout)', link: 'Customer app · R7 Your plan is saved' },
-      { k: 'Order', st: 'done', chip: 'Done', date: 'Oct 24', body: 'One payment · 3 store runs · service fee waived (Plus) · Mini globe sold out → Alex chose Slim shade on Apple Watch (+$16)', link: 'Apple Watch · out-of-stock alert' },
+      { k: 'Plan', st: 'done', chip: 'Done', date: 'Oct 18', body: 'Plan v3 saved · 7 items · Mini globe lamp chosen', link: 'Customer app · R7 Your plan is saved' },
+      { k: 'Order', st: 'done', chip: 'Done', date: 'Oct 24', body: 'Paid $2,807 · 3 store runs · service fee waived (Plus) · Oct 25: Mini globe sold out → Alex chose Slim shade on Apple Watch (+$16 → $2,823)', link: 'Apple Watch · out-of-stock alert' },
       { k: 'Sourcing', st: 'done', chip: '3 store runs', date: 'Oct 25 – 27', runs: true, link: 'Orders & sourcing · sourcing board' },
       nov2 ? { k: 'Hub', st: 'done', chip: 'Done', date: 'Oct 30', body: 'All three stores’ items received and checked · left as one drop', link: 'Hub & routes' }
            : { k: 'Hub', st: 'current', chip: 'Now', date: 'Oct 29', body: 'Received A and B, checked, no damage · Store C bed arrives today 3 pm · held so everything leaves as one drop', link: 'Hub & routes' },
@@ -168,7 +168,7 @@
            : { k: 'Delivery & install', st: 'next', chip: 'Scheduled', date: winDate(), body: `${w.route} · ${w.label.split(' · ').slice(1).join(' · ')}${w.plus ? '' : ''} · install bed and desk · 2-person crew`, link: 'Customer app · D1 Delivery overview' },
       nov2 ? { k: 'Aftercare', st: 'current', chip: ret ? (ret.mode === 'exchange' ? 'Exchange' : 'Refund') : 'Now', date: 'Nov 2',
                body: ret ? (ret.mode === 'exchange' ? `Exchange approved · new lamp and pickup ${ret.pickup.split(' · ').slice(0, 2).join(', ')} · ${D.returnItems.find(i => i.id === ret.item).store} rebuy today` : `Refund approved · ${money(ledgerVals().refund)} back to Alex · pickup ${ret.pickup.split(' · ').slice(0, 2).join(', ')}`)
-                         : 'Check-in Nov 2 · Alex reported a cracked lamp base · 1 photo · rated the crew 4 stars', link: 'Customer app · F1 Check-in' }
+                         : 'Check-in Nov 2 · Alex reported a cracked lamp base · 1 photo · rated the crew 5 stars', link: 'Customer app · F1 Check-in' }
            : { k: 'Aftercare', st: 'next', chip: 'Planned', date: 'Nov 2', body: 'Check-in “How does it feel at home?” · return window open until Nov 29', link: 'Customer app · F1 Check-in' }
     ];
     const v = ledgerVals();
