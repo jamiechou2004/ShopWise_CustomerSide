@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 
 // Screens with a full-bleed photo at the top get light status bar glyphs.
-const LIGHT_TOP = [/^\/$/, /^\/style\//];
+const LIGHT_TOP = [/^\/$/, /^\/style\//, /^\/setup\/generating/];
 
 export function Device({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();

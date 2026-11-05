@@ -1,14 +1,15 @@
-import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon, Screen, Toast, useToast } from '../components/ui';
 import { Category, categories, money, pairings, pieces } from '../data';
-import { SETUP_TOTAL, updateProfile, useProfile } from '../store';
+import { SETUP_TOTAL, updateProfile, usePlan, useProfile } from '../store';
+import { resumePath } from './Setup';
 
 export function TabBar({ active, onMissing }: { active: 'home' | 'plan' | 'profile'; onMissing: (m: string) => void }) {
   const navigate = useNavigate();
   const items = [
     { id: 'home', label: 'Home', icon: 'home', go: () => navigate('/home') },
-    { id: 'plan', label: 'My Plan', icon: 'auto_awesome', go: () => onMissing('My Plan comes with the Design a room flow') },
+    { id: 'plan', label: 'My Plan', icon: 'auto_awesome', go: () => onMissing('My Plan opens in the Select & replace flow') },
     { id: 'profile', label: 'Profile', icon: 'person', go: () => navigate('/profile') },
   ] as const;
   return (
@@ -36,9 +37,20 @@ export function Home() {
   const tab = params.get('tab') === 'inspiration' ? 'inspiration' : 'furniture';
   const [category, setCategory] = useState<Category | 'all'>('all');
   const [toast, showToast] = useToast();
+  const plan = usePlan();
+  const location = useLocation();
 
-  const done = profile.setupStepsDone ?? 0;
-  const setupComplete = done >= SETUP_TOTAL;
+  // A toast handed over by the previous screen (save & exit, plan ready).
+  useEffect(() => {
+    const msg = (location.state as { toast?: string } | null)?.toast;
+    if (msg) {
+      showToast(msg);
+      navigate(location.pathname + location.search, { replace: true, state: null });
+    }
+  }, [location.state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const done = plan?.stepsDone ?? 0;
+  const setupComplete = plan?.status === 'ready';
   const favorites = new Set(profile.favorites ?? []);
   const shown = category === 'all' ? pieces : pieces.filter((p) => p.category === category);
 
@@ -91,7 +103,7 @@ export function Home() {
                       <span style={{ width: `${(done / SETUP_TOTAL) * 100}%` }} />
                     </div>
                   </div>
-                  <button className="btn small white" onClick={() => showToast('Design a room is the next flow to build')}>
+                  <button className="btn small white" onClick={() => navigate(resumePath(done))}>
                     Continue
                   </button>
                 </section>

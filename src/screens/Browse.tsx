@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { BackButton, Icon, Screen, Toast, useToast } from '../components/ui';
 import { money, styles } from '../data';
-import { resetOnboarding, useProfile } from '../store';
+import { resetOnboarding, savePlan, useProfile } from '../store';
 import { TabBar } from './Home';
 
 type Scope = 'styles' | 'furniture' | 'rooms';
@@ -97,6 +97,7 @@ export function Search() {
 
 /* H5 · Style detail */
 export function StyleDetail() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const style = styles.find((s) => s.id === id) ?? styles[0];
   const [saved, setSaved] = useState(false);
@@ -127,7 +128,7 @@ export function StyleDetail() {
           </div>
           <div className="section-head">
             <h2>Seating</h2>
-            <button onClick={() => showToast('The full list comes with Design a room')}>See all</button>
+            <button onClick={() => showToast('The full list opens in a later flow')}>See all</button>
           </div>
           <div className="rail">
             {style.seating.map((p) => (
@@ -141,7 +142,13 @@ export function StyleDetail() {
         </div>
       </div>
       <div className="footer" style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-        <button className="btn primary" onClick={() => showToast('Design a room is the next flow to build')}>
+        <button
+          className="btn primary"
+          onClick={() => {
+            savePlan({ answers: { style: 'warm' } });
+            navigate('/setup/1');
+          }}
+        >
           Start with this style
         </button>
       </div>

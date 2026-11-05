@@ -1,12 +1,14 @@
 # Shopwise — customer app prototype
 
-Interactive prototype of the Shopwise customer app (UXDG 415), built from the Figma Hi-Fi page **06 · Hi-Fi · five workflows**. This first version covers **01 · Onboarding**.
+Interactive prototype of the Shopwise customer app (UXDG 415), built from the Figma Hi-Fi page **06 · Hi-Fi · five workflows**. Built so far: **01 · Onboarding** and **02 · Design a room**.
 
 ## Flow
 
 Welcome → Sign up (Apple / Google / Email) → Email → You're in (name) → Greeting (home type) → Home
 
 From Home: Furniture and Inspiration tabs, Search, and the "A restful bedroom" style detail. Profile has **Start over** to reset between test sessions.
+
+Design a room: Home → Finish setup → 9 questions → Your home brief → Generating → Home with the plan ready. **Save** on any question stores a draft and returns to Home; **Continue** on the setup card resumes at the next unanswered step. Rows in the brief open that question and return to the brief. "Start with this style" on the style detail starts setup with that style picked.
 
 | Route | Figma frame |
 | --- | --- |
@@ -19,6 +21,9 @@ From Home: Furniture and Inspiration tabs, Search, and the "A restful bedroom" s
 | `/home?tab=inspiration` | H1 · Home · Inspiration |
 | `/search` | H2 · Search |
 | `/style/restful-bedroom` | H5 · Style detail |
+| `/setup/1` … `/setup/9` | S1·1 Goal … S3·9 Timing |
+| `/setup/brief` | S4 · Your brief |
+| `/setup/generating` | S5 · Generating |
 
 Everything is simulated: no real accounts, payments or AI. State is saved in `localStorage` under `shopwise-prototype-v1`, so onboarding is not repeated after it's done.
 

@@ -222,7 +222,6 @@ export function Greeting() {
   const finish = (withChoice: boolean) => {
     updateProfile({
       homeType: withChoice ? choice : undefined,
-      setupStepsDone: withChoice ? 1 : 0,
       onboardedAt: profile.onboardedAt ?? new Date().toISOString(),
     });
     navigate('/home', { replace: true });

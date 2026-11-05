@@ -9,6 +9,7 @@ from fontTools.ttLib import TTFont
 ICONS = """
 chevron_left chevron_right mail home auto_awesome credit_card check group
 apartment search tune grid_view favorite keyboard_arrow_down person close
+add remove bed inventory_2 calendar_month location_on near_me
 """.split()
 
 SRC = "node_modules/material-symbols/material-symbols-rounded.woff2"
@@ -28,7 +29,7 @@ for lookup in font["GSUB"].table.LookupList.Lookup:
             for rule in rules:
                 ligatures[tuple([first] + rule.Component)] = rule.LigGlyph
 
-keep = {by_char[c] for c in "abcdefghijklmnopqrstuvwxyz_" if c in by_char}
+keep = {by_char[c] for c in "abcdefghijklmnopqrstuvwxyz_0123456789" if c in by_char}
 for name in ICONS:
     glyph = ligatures.get(tuple(by_char[c] for c in name))
     if not glyph:

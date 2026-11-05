@@ -1,10 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Device } from './components/Device';
 import { Email, Greeting, SignUp, Welcome, YoureIn } from './screens/Onboarding';
 import { Home } from './screens/Home';
 import { Profile, Search, StyleDetail } from './screens/Browse';
+import { Brief, Generating, SetupStep } from './screens/Setup';
 import { useProfile } from './store';
 import '@fontsource/lexend-deca/400.css';
 import '@fontsource/lexend-deca/500.css';
@@ -22,6 +23,12 @@ function RequireOnboarded({ children }: { children: JSX.Element }) {
   return profile.onboardedAt ? children : <Navigate to="/" replace />;
 }
 
+/** Remount per step so each question starts from the saved answers. */
+function KeyedStep() {
+  const { pathname, search } = useLocation();
+  return <SetupStep key={pathname + search} />;
+}
+
 function App() {
   return (
     <Device>
@@ -35,6 +42,9 @@ function App() {
         <Route path="/search" element={<RequireOnboarded><Search /></RequireOnboarded>} />
         <Route path="/style/:id" element={<RequireOnboarded><StyleDetail /></RequireOnboarded>} />
         <Route path="/profile" element={<RequireOnboarded><Profile /></RequireOnboarded>} />
+        <Route path="/setup/brief" element={<RequireOnboarded><Brief /></RequireOnboarded>} />
+        <Route path="/setup/generating" element={<RequireOnboarded><Generating /></RequireOnboarded>} />
+        <Route path="/setup/:step" element={<RequireOnboarded><KeyedStep /></RequireOnboarded>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Device>
