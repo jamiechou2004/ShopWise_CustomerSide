@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Device } from './components/Device';
 import { Email, Greeting, SignUp, Welcome, YoureIn } from './screens/Onboarding';
 import { Home } from './screens/Home';
@@ -51,10 +51,13 @@ function App() {
   );
 }
 
+// The hosted preview can't use URL paths, so it routes in memory.
+const Router = import.meta.env.VITE_ROUTER === 'memory' ? MemoryRouter : BrowserRouter;
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <Router>
       <App />
-    </BrowserRouter>
+    </Router>
   </StrictMode>,
 );

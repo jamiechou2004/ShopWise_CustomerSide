@@ -1,3 +1,4 @@
+import { asset } from '../asset';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { BackButton, Icon, Screen } from '../components/ui';
@@ -111,9 +112,9 @@ const EVERY_DAY = ['Work from home', 'Hosting', 'Storage', 'Reading', 'Plants', 
 const KEEPING = ['Sofa', 'Bed', 'Desk', 'Dining table', 'Lamp', 'Storage'];
 
 export const STYLES: { id: StyleId; label: string; image: string }[] = [
-  { id: 'warm', label: 'Warm & natural', image: '/img/style-warm.png' },
-  { id: 'minimal', label: 'Quiet & minimal', image: '/img/style-minimal.png' },
-  { id: 'eclectic', label: 'Personal & eclectic', image: '/img/style-eclectic.png' },
+  { id: 'warm', label: 'Warm & natural', image: asset('img/style-warm.png') },
+  { id: 'minimal', label: 'Quiet & minimal', image: asset('img/style-minimal.png') },
+  { id: 'eclectic', label: 'Personal & eclectic', image: asset('img/style-eclectic.png') },
 ];
 
 const BUDGET_MIN = 500;
@@ -149,8 +150,8 @@ const STEPS: { title: string; gap?: number; render: (p: StepProps) => ReactNode;
     render: ({ a, set }) => (
       <div className="options" role="radiogroup" aria-label="Goal" style={{ gap: 24 }}>
         {([
-          { id: 'home', label: 'Furnish a new home', image: '/img/goal-home.png' },
-          { id: 'piece', label: 'Find one piece', image: '/img/goal-piece.png' },
+          { id: 'home', label: 'Furnish a new home', image: asset('img/goal-home.png') },
+          { id: 'piece', label: 'Find one piece', image: asset('img/goal-piece.png') },
         ] as const).map((g) => (
           <button key={g.id} className="goal-card" role="radio" aria-checked={a.goal === g.id} onClick={() => set({ goal: g.id })}>
             <img src={g.image} alt="" />
@@ -577,9 +578,9 @@ export function Generating() {
 
   return (
     <Screen plain className="generating">
-      <img className="reveal" src="/img/room-tall.png" alt="" />
+      <img className="reveal" src={asset('img/room-tall.png')} alt="" />
       <div className="unrevealed" style={{ top: lineY }}>
-        <img src="/img/room-tall.png" alt="" style={{ top: -lineY }} />
+        <img src={asset('img/room-tall.png')} alt="" style={{ top: -lineY }} />
       </div>
       <div className="scan" style={{ top: lineY - 35 }} />
       <div className="scan-line" style={{ top: lineY - 1 }} />

@@ -1,3 +1,4 @@
+import { asset } from '../asset';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon, Screen, Toast, useToast } from '../components/ui';
@@ -155,7 +156,7 @@ export function Home() {
           ) : (
             <>
               <button className="feature" onClick={() => navigate('/style/restful-bedroom')}>
-                <img src="/img/bedroom.png" alt="" />
+                <img src={asset('img/bedroom.png')} alt="" />
                 <span className="tag">Most loved</span>
                 <span className="caption">A restful bedroom</span>
               </button>

@@ -1,3 +1,4 @@
+import { asset } from '../asset';
 import { FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppleMark, BackButton, Icon, Screen } from '../components/ui';
@@ -10,7 +11,7 @@ export function Welcome() {
   return (
     <Screen plain>
       <div className="welcome-hero">
-        <img src="/img/room.png" alt="A calm living room with a grey linen sofa and light oak coffee table" />
+        <img src={asset('img/room.png')} alt="A calm living room with a grey linen sofa and light oak coffee table" />
       </div>
       <div className="welcome-copy">
         <p className="eyebrow">SHOPWISE</p>
