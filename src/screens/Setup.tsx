@@ -567,7 +567,7 @@ export function Generating() {
     if (p < 1) return;
     const t = setTimeout(() => {
       savePlan({ status: 'ready', stepsDone: SETUP_TOTAL });
-      navigate('/home', { replace: true, state: { toast: 'Your room plan is ready' } });
+      navigate('/plan', { replace: true, state: { toast: 'Your room plan is ready' } });
     }, 450);
     return () => clearTimeout(t);
   }, [p, navigate]);

@@ -1,6 +1,6 @@
 # Shopwise — customer app prototype
 
-Interactive prototype of the Shopwise customer app (UXDG 415), built from the Figma Hi-Fi page **06 · Hi-Fi · five workflows**. Built so far: **01 · Onboarding** and **02 · Design a room**.
+Interactive prototype of the Shopwise customer app (UXDG 415), built from the Figma Hi-Fi page **06 · Hi-Fi · five workflows**. All five workflows are built: **01 · Onboarding**, **02 · Design a room**, **03 · Select & replace**, **04 · Checkout** and **05 · Return to user**.
 
 ## Flow
 
@@ -24,6 +24,20 @@ Design a room: Home → Finish setup → 9 questions → Your home brief → Gen
 | `/setup/1` … `/setup/9` | S1·1 Goal … S3·9 Timing |
 | `/setup/brief` | S4 · Your brief |
 | `/setup/generating` | S5 · Generating |
+| `/plan` | R1 · Room plan (R6 · Updated after a swap) |
+| `/plan/lamp`, `/plan/lamp/replace` | R2 · Lamp, R3 · Replace lamp |
+| `/plan/lamp/browse` | R3 · Browse lamps (no AI) |
+| `/plan/lamp/ask` → `/finding` → `/options` | R3 · Ask AI, R4, R5 |
+| `/plan/lamp/try/:lampId`, `/plan/saved` | R6 · Try it, R7 · Saved |
+| `/checkout` … `/checkout/placed` | C1, C3, C4, C5 · Pay, C6 |
+| `/orders/:id/swap`, `/orders/:id/swapped` | C7 · Pick a lamp, C8 · Lamp swapped |
+| `/notify`, `/check-in` | F0 · Notification, F1 · Check-in |
+| `/orders`, `/orders/:id` | O1 · Your orders, O2 · Order |
+| `/return/1` … `/return/approved` | T1–T5 · Return or exchange |
+
+Prices follow one rule everywhere (`src/plan.ts`): furniture + tax at 207/2,480 + $120 delivery, $0 service fee for Plus. That gives $2,850 with the shade lamp, $2,807 with the mini globe and $2,823 after the sold-out swap.
+
+To test the after-delivery flows, use **Profile → Skip to delivery day** once an order is placed.
 
 Everything is simulated: no real accounts, payments or AI. State is saved in `localStorage` under `shopwise-prototype-v1`, so onboarding is not repeated after it's done.
 

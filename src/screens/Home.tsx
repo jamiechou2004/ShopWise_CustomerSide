@@ -6,11 +6,15 @@ import { Category, categories, money, pairings, pieces } from '../data';
 import { SETUP_TOTAL, updateProfile, usePlan, useProfile } from '../store';
 import { resumePath } from './Setup';
 
-export function TabBar({ active, onMissing }: { active: 'home' | 'plan' | 'profile'; onMissing: (m: string) => void }) {
+export function TabBar({ active }: { active: 'home' | 'plan' | 'profile'; onMissing?: (m: string) => void }) {
   const navigate = useNavigate();
+  const plan = usePlan();
   const items = [
     { id: 'home', label: 'Home', icon: 'home', go: () => navigate('/home') },
-    { id: 'plan', label: 'My Plan', icon: 'auto_awesome', go: () => onMissing('My Plan opens in the Select & replace flow') },
+    {
+      id: 'plan', label: 'My Plan', icon: 'auto_awesome',
+      go: () => navigate(plan?.status === 'ready' ? '/plan' : resumePath(plan?.stepsDone ?? 0)),
+    },
     { id: 'profile', label: 'Profile', icon: 'person', go: () => navigate('/profile') },
   ] as const;
   return (

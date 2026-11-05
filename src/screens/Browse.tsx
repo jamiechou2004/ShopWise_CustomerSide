@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { BackButton, Icon, Screen, Toast, useToast } from '../components/ui';
 import { money, styles } from '../data';
-import { resetOnboarding, savePlan, useProfile } from '../store';
+import { resetOnboarding, savePlan, useOrder, useProfile } from '../store';
+import { simulateDelivery } from './Orders';
 import { TabBar } from './Home';
 
 type Scope = 'styles' | 'furniture' | 'rooms';
@@ -161,6 +162,7 @@ export function StyleDetail() {
 export function Profile() {
   const navigate = useNavigate();
   const profile = useProfile();
+  const order = useOrder();
   const [toast, showToast] = useToast();
   const homeLabel = { apartment: 'Apartment', house: 'House', shared: 'Shared home' };
 
@@ -182,15 +184,34 @@ export function Profile() {
             <span>{profile.homeType ? homeLabel[profile.homeType] : 'Not set'}</span>
           </div>
         </div>
-        <button
-          className="btn secondary"
-          onClick={() => {
-            resetOnboarding();
-            navigate('/', { replace: true });
-          }}
-        >
-          Start over
+        <button className="list nav-row" onClick={() => navigate('/orders')}>
+          <span className="list-row">
+            <span className="badge plain"><Icon name="receipt_long" /></span>
+            <span className="label">Your orders</span>
+            {order && <span className="value muted">{order.id}</span>}
+            <Icon name="chevron_right" />
+          </span>
         </button>
+
+        <p className="section-label" style={{ marginTop: 8 }}>Prototype controls</p>
+        <div className="list">
+          {order && order.status === 'buying' && (
+            <button className="list-row" onClick={() => { simulateDelivery(order); navigate('/notify'); }}>
+              <span className="label">Skip to delivery day</span>
+              <Icon name="chevron_right" />
+            </button>
+          )}
+          <button
+            className="list-row"
+            onClick={() => {
+              resetOnboarding();
+              navigate('/', { replace: true });
+            }}
+          >
+            <span className="label">Start over</span>
+            <Icon name="chevron_right" />
+          </button>
+        </div>
       </div>
       <TabBar active="profile" onMissing={showToast} />
       <Toast message={toast} />

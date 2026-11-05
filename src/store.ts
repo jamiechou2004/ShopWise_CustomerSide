@@ -36,6 +36,8 @@ export interface PlanAnswers {
 
 export interface Plan {
   status: 'draft' | 'ready';
+  /** Which lamp is in the living room (the one piece with a full replace chain). */
+  lampId?: string;
   /** Screens finished, out of SETUP_TOTAL (9 questions + brief + generate). */
   stepsDone: number;
   answers: PlanAnswers;
@@ -64,7 +66,34 @@ export const DEFAULT_ANSWERS: PlanAnswers = {
   timingNote: '',
 };
 
-type Store = { profile?: Profile; plan?: Plan } & Record<string, unknown>;
+export interface OrderLine {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+}
+
+export interface ReturnRequest {
+  itemId: string;
+  reason: string;
+  fix: 'exchange' | 'refund';
+  visit: string;
+  amount: number;
+}
+
+/** Orders are snapshots: editing the plan later never changes them. */
+export interface Order {
+  id: string;
+  lines: OrderLine[];
+  total: number;
+  slot: string;
+  status: 'buying' | 'delivered';
+  /** Set once the sold-out lamp is resolved. */
+  swap?: { from: string; to: string; diff: number };
+  ret?: ReturnRequest;
+}
+
+type Store = { profile?: Profile; plan?: Plan; order?: Order } & Record<string, unknown>;
 
 let cache: Store | null = null;
 const listeners = new Set<() => void>();
@@ -106,11 +135,12 @@ export function getPlan(): Plan | undefined {
 }
 
 /** Merge answers into the plan; never lowers stepsDone. */
-export function savePlan(patch: { answers?: Partial<PlanAnswers>; stepsDone?: number; status?: Plan['status'] }) {
+export function savePlan(patch: { answers?: Partial<PlanAnswers>; stepsDone?: number; status?: Plan['status']; lampId?: string }) {
   const store = read();
   const prev = store.plan;
   const plan: Plan = {
     status: patch.status ?? prev?.status ?? 'draft',
+    lampId: patch.lampId ?? prev?.lampId,
     stepsDone: Math.max(prev?.stepsDone ?? 0, patch.stepsDone ?? 0),
     answers: { ...DEFAULT_ANSWERS, ...prev?.answers, ...patch.answers },
     updatedAt: new Date().toISOString(),
@@ -118,11 +148,20 @@ export function savePlan(patch: { answers?: Partial<PlanAnswers>; stepsDone?: nu
   write({ ...store, plan });
 }
 
-/** Clears only what onboarding and setup wrote, so other saved data stays. */
+export function getOrder(): Order | undefined {
+  return read().order;
+}
+
+export function saveOrder(order: Order | undefined) {
+  write({ ...read(), order });
+}
+
+/** Clears only what this prototype's flows wrote, so other saved data stays. */
 export function resetOnboarding() {
-  const { profile: _p, plan: _q, ...rest } = read();
+  const { profile: _p, plan: _q, order: _o, ...rest } = read();
   void _p;
   void _q;
+  void _o;
   write(rest);
 }
 
@@ -139,6 +178,10 @@ export function useProfile(): Profile {
 
 export function usePlan(): Plan | undefined {
   return useSyncExternalStore(subscribe, getPlan, getPlan);
+}
+
+export function useOrder(): Order | undefined {
+  return useSyncExternalStore(subscribe, getOrder, getOrder);
 }
 
 export const SETUP_TOTAL = 11;

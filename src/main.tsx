@@ -6,6 +6,9 @@ import { Email, Greeting, SignUp, Welcome, YoureIn } from './screens/Onboarding'
 import { Home } from './screens/Home';
 import { Profile, Search, StyleDetail } from './screens/Browse';
 import { Brief, Generating, SetupStep } from './screens/Setup';
+import { AskAI, BrowseLamps, FindingOptions, LampDetail, LampOptions, PlanSaved, ReplaceLamp, RoomPlan, TryLamp } from './screens/Plan';
+import { Costs, Delivery, LampSwapped, OrderPlaced, PickLamp, ReviewFurniture } from './screens/Checkout';
+import { CheckIn, CheckInNotification, OrderDetail, Orders, ReturnApproved, ReturnReview, ReturnStep } from './screens/Orders';
 import { useProfile } from './store';
 import '@fontsource/lexend-deca/400.css';
 import '@fontsource/lexend-deca/500.css';
@@ -45,6 +48,29 @@ function App() {
         <Route path="/setup/brief" element={<RequireOnboarded><Brief /></RequireOnboarded>} />
         <Route path="/setup/generating" element={<RequireOnboarded><Generating /></RequireOnboarded>} />
         <Route path="/setup/:step" element={<RequireOnboarded><KeyedStep /></RequireOnboarded>} />
+        <Route path="/plan" element={<RequireOnboarded><RoomPlan /></RequireOnboarded>} />
+        <Route path="/plan/lamp" element={<RequireOnboarded><LampDetail /></RequireOnboarded>} />
+        <Route path="/plan/lamp/replace" element={<RequireOnboarded><ReplaceLamp /></RequireOnboarded>} />
+        <Route path="/plan/lamp/browse" element={<RequireOnboarded><BrowseLamps /></RequireOnboarded>} />
+        <Route path="/plan/lamp/ask" element={<RequireOnboarded><AskAI /></RequireOnboarded>} />
+        <Route path="/plan/lamp/finding" element={<RequireOnboarded><FindingOptions /></RequireOnboarded>} />
+        <Route path="/plan/lamp/options" element={<RequireOnboarded><LampOptions /></RequireOnboarded>} />
+        <Route path="/plan/lamp/try/:lampId" element={<RequireOnboarded><TryLamp /></RequireOnboarded>} />
+        <Route path="/plan/saved" element={<RequireOnboarded><PlanSaved /></RequireOnboarded>} />
+        <Route path="/checkout" element={<RequireOnboarded><ReviewFurniture /></RequireOnboarded>} />
+        <Route path="/checkout/delivery" element={<RequireOnboarded><Delivery /></RequireOnboarded>} />
+        <Route path="/checkout/costs" element={<RequireOnboarded><Costs /></RequireOnboarded>} />
+        <Route path="/checkout/pay" element={<RequireOnboarded><Costs paying /></RequireOnboarded>} />
+        <Route path="/checkout/placed" element={<RequireOnboarded><OrderPlaced /></RequireOnboarded>} />
+        <Route path="/orders" element={<RequireOnboarded><Orders /></RequireOnboarded>} />
+        <Route path="/orders/:id" element={<RequireOnboarded><OrderDetail /></RequireOnboarded>} />
+        <Route path="/orders/:id/swap" element={<RequireOnboarded><PickLamp /></RequireOnboarded>} />
+        <Route path="/orders/:id/swapped" element={<RequireOnboarded><LampSwapped /></RequireOnboarded>} />
+        <Route path="/notify" element={<RequireOnboarded><CheckInNotification /></RequireOnboarded>} />
+        <Route path="/check-in" element={<RequireOnboarded><CheckIn /></RequireOnboarded>} />
+        <Route path="/return/review" element={<RequireOnboarded><ReturnReview /></RequireOnboarded>} />
+        <Route path="/return/approved" element={<RequireOnboarded><ReturnApproved /></RequireOnboarded>} />
+        <Route path="/return/:step" element={<RequireOnboarded><ReturnStep /></RequireOnboarded>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Device>
