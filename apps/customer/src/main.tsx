@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, HashRouter, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Device } from './components/Device';
 import { Email, Greeting, SignUp, Welcome, YoureIn } from './screens/Onboarding';
 import { Home } from './screens/Home';
@@ -77,8 +77,9 @@ function App() {
   );
 }
 
-// The hosted preview can't use URL paths, so it routes in memory.
-const Router = import.meta.env.VITE_ROUTER === 'memory' ? MemoryRouter : BrowserRouter;
+// VITE_ROUTER: unset = URL paths (Vercel), 'hash' = GitHub Pages, 'memory' = hosted preview.
+const Router =
+  import.meta.env.VITE_ROUTER === 'memory' ? MemoryRouter : import.meta.env.VITE_ROUTER === 'hash' ? HashRouter : BrowserRouter;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

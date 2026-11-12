@@ -43,13 +43,15 @@ Everything is simulated: no real accounts, payments or AI. State is saved in `lo
 
 ## Run
 
+From the repo root:
+
 ```bash
 npm install
-npm run dev      # local dev server
-npm run build    # type-check + production build into dist/
+npm run dev:customer     # local dev server
+npm run build:customer   # type-check + production build into apps/customer/dist/
 ```
 
-Deploy on Vercel as a Vite project (`vercel.json` handles client-side routes).
+GitHub Pages builds this app with hash routing (`VITE_ROUTER=hash`, see `scripts/build-site.mjs` at the repo root). To deploy on Vercel instead, import the repo and set **Root Directory** to `apps/customer`; `vercel.json` handles client-side routes.
 
 ## Notes
 

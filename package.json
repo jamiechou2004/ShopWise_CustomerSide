@@ -1,0 +1,12 @@
+{
+  "name": "shopwise",
+  "private": true,
+  "description": "Shopwise (UXDG 415) prototypes: customer app and GM console",
+  "workspaces": ["apps/customer"],
+  "scripts": {
+    "dev:customer": "npm run dev -w apps/customer",
+    "build:customer": "npm run build -w apps/customer",
+    "build:site": "node scripts/build-site.mjs",
+    "preview:site": "python3 -m http.server 8080 --directory site"
+  }
+}
