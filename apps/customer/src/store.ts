@@ -38,6 +38,11 @@ export interface Plan {
   status: 'draft' | 'ready';
   /** Which lamp is in the living room (the one piece with a full replace chain). */
   lampId?: string;
+  /** Living room and bedroom pieces; unset means the default plan. 'lamp' is the lamp slot. */
+  living?: string[];
+  bedroom?: string[];
+  /** Set when the living room came from Plan with AI. */
+  livingBudget?: number;
   /** Screens finished, out of SETUP_TOTAL (9 questions + brief + generate). */
   stepsDone: number;
   answers: PlanAnswers;
@@ -135,12 +140,23 @@ export function getPlan(): Plan | undefined {
 }
 
 /** Merge answers into the plan; never lowers stepsDone. */
-export function savePlan(patch: { answers?: Partial<PlanAnswers>; stepsDone?: number; status?: Plan['status']; lampId?: string }) {
+export function savePlan(patch: {
+  answers?: Partial<PlanAnswers>;
+  stepsDone?: number;
+  status?: Plan['status'];
+  lampId?: string;
+  living?: string[];
+  bedroom?: string[];
+  livingBudget?: number;
+}) {
   const store = read();
   const prev = store.plan;
   const plan: Plan = {
     status: patch.status ?? prev?.status ?? 'draft',
     lampId: patch.lampId ?? prev?.lampId,
+    living: patch.living ?? prev?.living,
+    bedroom: patch.bedroom ?? prev?.bedroom,
+    livingBudget: patch.livingBudget ?? prev?.livingBudget,
     stepsDone: Math.max(prev?.stepsDone ?? 0, patch.stepsDone ?? 0),
     answers: { ...DEFAULT_ANSWERS, ...prev?.answers, ...patch.answers },
     updatedAt: new Date().toISOString(),

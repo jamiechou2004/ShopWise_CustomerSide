@@ -1,8 +1,8 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { BackButton, Icon, Screen, Toast, useToast } from '../components/ui';
+import { BackButton, Icon, Screen, Toast, useToast, Thumb } from '../components/ui';
 import { money } from '../data';
-import { isLamp, lampById, slotById, taxOn } from '../plan';
+import { isLamp, lampById, slotById, taxOn, lineIcon } from '../plan';
 import { Order, ReturnRequest, saveOrder, useOrder, usePlan } from '../store';
 import { TabBar } from './Home';
 import { Tracker, lampInOrder, orderSteps } from './Checkout';
@@ -81,7 +81,7 @@ export function Orders() {
         {order ? (
           <button className="order-card" onClick={() => navigate(`/orders/${order.id}`)}>
             <span className="thumbs">
-              {order.lines.slice(0, 4).map((l) => <img key={l.id} src={l.image} alt="" />)}
+              {order.lines.slice(0, 4).map((l) => <Thumb key={l.id} src={l.image} icon={lineIcon(l.id)} />)}
               {order.lines.length > 4 && <span className="more">+{order.lines.length - 4}</span>}
             </span>
             <span className="head">
@@ -155,7 +155,7 @@ export function OrderDetail() {
           <div className="lines">
             {order.lines.map((l) => (
               <div key={l.id} className="line-row compact">
-                <img src={l.image} alt="" />
+                <Thumb src={l.image} icon={lineIcon(l.id)} />
                 <span className="name">{l.name}</span>
                 <span className="price">{money(l.price)}</span>
               </div>
@@ -256,7 +256,7 @@ export function ReturnStep() {
               <div className="options" role="radiogroup" aria-label="Item">
                 {order1.map((l) => (
                   <button key={l.id} className="option item" role="radio" aria-checked={d.itemId === l.id} onClick={() => set({ itemId: l.id })}>
-                    <img src={l.image} alt="" />
+                    <Thumb src={l.image} icon={lineIcon(l.id)} />
                     <span className="label">{l.name}</span>
                     <span className="radio square">{d.itemId === l.id && <Icon name="check" />}</span>
                   </button>
@@ -357,7 +357,7 @@ export function ReturnReview() {
       <nav className="navbar"><BackButton icon="close" label="Close" /></nav>
       <div className="body" style={{ gap: 18, paddingTop: 20 }}>
         <h1 className="title">Review</h1>
-        <div className="line-row"><img src={item.image} alt="" /><span className="name">{item.name}</span><span className="price">{money(item.price)}</span></div>
+        <div className="line-row"><Thumb src={item.image} icon={lineIcon(item.id)} /><span className="name">{item.name}</span><span className="price">{money(item.price)}</span></div>
         <div className="list rows">
           <div className="list-row"><span className="label">Issue</span><span className="value">{REASONS.find((r) => r.id === draft.reason)!.label}</span></div>
           <div className="list-row"><span className="label">Fix</span><span className="value">{draft.fix === 'exchange' ? 'Exchange' : 'Refund'}</span></div>

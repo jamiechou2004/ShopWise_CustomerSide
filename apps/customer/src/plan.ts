@@ -58,23 +58,64 @@ export const isLamp = (id: string) => LAMPS.some((l) => l.id === id);
 
 /* ---------- Rooms in the plan ---------- */
 
-const piece = (id: string) => pieces.find((p) => p.id === id)!;
-const LIVING_IDS = ['linen-sofa', 'coffee-table'];
-const BEDROOM_IDS = ['queen-bed', 'wardrobe', 'desk', 'desk-chair'];
+export interface Item {
+  id: string;
+  name: string;
+  price: number;
+  /** Missing for pieces without a product photo yet; rows show an icon tile instead. */
+  image?: string;
+  icon: string;
+  kind: 'sofa' | 'chair' | 'table' | 'storage' | 'bed' | 'other';
+}
+
+// Pieces only the AI flows add. Prices keep Figma's totals: Light & airy $1,420, updated $1,470.
+const EXTRA_ITEMS: Item[] = [
+  { id: 'sofa-bed', name: 'Sofa bed', price: 890, icon: 'weekend', kind: 'sofa' },
+  { id: 'pouf', name: 'Pouf', price: 110, icon: 'chair', kind: 'chair' },
+  { id: 'side-table', name: 'Side table', price: 90, icon: 'table_bar', kind: 'table' },
+  { id: 'wall-shelf', name: 'Wall shelf', price: 110, icon: 'shelves', kind: 'storage' },
+  { id: 'boucle-loveseat', name: 'Bouclé loveseat', price: 520, image: asset('img/my-room-boucle.png'), icon: 'weekend', kind: 'sofa' },
+  { id: 'caramel-sofa', name: 'Caramel leather sofa', price: 980, image: asset('img/my-room-caramel.png'), icon: 'weekend', kind: 'sofa' },
+];
+
+const KIND: Record<string, Item['kind']> = {
+  'linen-sofa': 'sofa', armchair: 'chair', 'desk-chair': 'chair', 'coffee-table': 'table', desk: 'table',
+  wardrobe: 'storage', 'queen-bed': 'bed',
+};
+const ICON: Record<Item['kind'], string> = { sofa: 'weekend', chair: 'chair', table: 'table_bar', storage: 'shelves', bed: 'bed', other: 'chair' };
+
+export function itemById(id: string): Item {
+  const extra = EXTRA_ITEMS.find((i) => i.id === id);
+  if (extra) return extra;
+  const p = pieces.find((x) => x.id === id);
+  if (!p) throw new Error(`Unknown item ${id}`);
+  const kind = KIND[id] ?? 'other';
+  return { id: p.id, name: p.name, price: p.price, image: p.image, icon: ICON[kind], kind };
+}
+
+export const isSofa = (id: string) => id !== 'lamp' && !isLamp(id) && itemById(id).kind === 'sofa';
+
+/** 'lamp' is the lamp slot; it resolves to plan.lampId so the lamp swap chain keeps working. */
+export const DEFAULT_LIVING = ['linen-sofa', 'lamp', 'coffee-table'];
+export const DEFAULT_BEDROOM = ['queen-bed', 'wardrobe', 'desk', 'desk-chair'];
 
 export function planLines(plan: Plan | undefined): { living: OrderLine[]; bedroom: OrderLine[]; all: OrderLine[] } {
   const lamp = lampById(plan?.lampId ?? DEFAULT_LAMP);
   const toLine = (id: string): OrderLine => {
-    const p = piece(id);
-    return { id: p.id, name: p.name, price: p.price, image: p.image };
+    if (id === 'lamp') return { id: lamp.id, name: lamp.name, price: lamp.price, image: lamp.thumb };
+    const i = itemById(id);
+    return { id: i.id, name: i.name, price: i.price, image: i.image ?? '' };
   };
-  const lampLine: OrderLine = { id: lamp.id, name: lamp.name, price: lamp.price, image: lamp.thumb };
-  const living = [toLine('linen-sofa'), lampLine, toLine('coffee-table')];
-  const bedroom = BEDROOM_IDS.map(toLine);
-  // Checkout order: sofa, table, lamp, then bedroom (matches C1).
-  const all = [toLine(LIVING_IDS[0]), toLine(LIVING_IDS[1]), lampLine, ...bedroom];
+  const living = (plan?.living ?? DEFAULT_LIVING).map(toLine);
+  const bedroom = (plan?.bedroom ?? DEFAULT_BEDROOM).map(toLine);
+  // Checkout order: living room without the lamp, then the lamp, then bedroom (matches C1).
+  const lampLines = living.filter((l) => isLamp(l.id));
+  const all = [...living.filter((l) => !isLamp(l.id)), ...lampLines, ...bedroom];
   return { living, bedroom, all };
 }
+
+/** Icon for a line without a photo. */
+export const lineIcon = (id: string) => (isLamp(id) ? 'lightbulb' : itemById(id).icon);
 
 /* ---------- Money: one rule for every screen ---------- */
 

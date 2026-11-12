@@ -9,6 +9,7 @@ import { Brief, Generating, SetupStep } from './screens/Setup';
 import { AskAI, BrowseLamps, FindingOptions, LampDetail, LampOptions, PlanSaved, ReplaceLamp, RoomPlan, TryLamp } from './screens/Plan';
 import { Costs, Delivery, LampSwapped, OrderPlaced, PickLamp, ReviewFurniture } from './screens/Checkout';
 import { CheckIn, CheckInNotification, OrderDetail, Orders, ReturnApproved, ReturnReview, ReturnStep } from './screens/Orders';
+import { PickPhoto, PlanWithAI, SofaFromPhoto } from './screens/Assistant';
 import { useProfile } from './store';
 import '@fontsource/lexend-deca/400.css';
 import '@fontsource/lexend-deca/500.css';
@@ -49,6 +50,9 @@ function App() {
         <Route path="/setup/generating" element={<RequireOnboarded><Generating /></RequireOnboarded>} />
         <Route path="/setup/:step" element={<RequireOnboarded><KeyedStep /></RequireOnboarded>} />
         <Route path="/plan" element={<RequireOnboarded><RoomPlan /></RequireOnboarded>} />
+        <Route path="/ai/plan" element={<RequireOnboarded><PlanWithAI /></RequireOnboarded>} />
+        <Route path="/ai/photos" element={<RequireOnboarded><PickPhoto /></RequireOnboarded>} />
+        <Route path="/ai/sofa" element={<RequireOnboarded><SofaFromPhoto /></RequireOnboarded>} />
         <Route path="/plan/lamp" element={<RequireOnboarded><LampDetail /></RequireOnboarded>} />
         <Route path="/plan/lamp/replace" element={<RequireOnboarded><ReplaceLamp /></RequireOnboarded>} />
         <Route path="/plan/lamp/browse" element={<RequireOnboarded><BrowseLamps /></RequireOnboarded>} />

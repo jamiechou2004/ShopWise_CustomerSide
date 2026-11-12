@@ -12,9 +12,10 @@ apartment search tune grid_view favorite keyboard_arrow_down person close
 add remove bed inventory_2 calendar_month location_on near_me
 refresh shopping_cart hourglass_empty check_circle error info arrow_upward lightbulb
 photo_camera receipt_long local_shipping
+weekend chair shelves table_bar photo_library square_foot thumb_up more_horiz
 """.split()
 
-SRC = "node_modules/material-symbols/material-symbols-rounded.woff2"
+SRC = "../../node_modules/material-symbols/material-symbols-rounded.woff2"
 OUT = "src/fonts/material-symbols-rounded-subset.woff2"
 
 font = TTFont(SRC)

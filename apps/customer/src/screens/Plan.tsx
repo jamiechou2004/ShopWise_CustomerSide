@@ -1,8 +1,8 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { BackButton, Icon, Screen, Toast, useToast } from '../components/ui';
+import { BackButton, Icon, Screen, Toast, useToast, Thumb } from '../components/ui';
 import { money } from '../data';
-import { LAMPS, Lamp, lampById, planLines, signed, totalWithLamp, totals } from '../plan';
+import { LAMPS, Lamp, isLamp, isSofa, lampById, planLines, signed, totalWithLamp, totals, lineIcon } from '../plan';
 import { Plan, getPlan, savePlan, usePlan } from '../store';
 import { TabBar } from './Home';
 
@@ -30,7 +30,8 @@ function BudgetTotal({ total, budget, size = 30 }: { total: number; budget: numb
   );
 }
 
-function LineRow({ name, price, image, highlight, onClick }: {
+function LineRow({ id, name, price, image, highlight, onClick }: {
+  id: string;
   name: string;
   price: number;
   image: string;
@@ -39,7 +40,7 @@ function LineRow({ name, price, image, highlight, onClick }: {
 }) {
   const content = (
     <>
-      <img src={image} alt="" />
+      <Thumb src={image} icon={lineIcon(id)} />
       <span className="name">{name}</span>
       <span className="price">{money(price)}</span>
     </>
@@ -86,6 +87,10 @@ export function RoomPlan() {
   const { total } = totals(lines.all);
   const budget = plan.answers.budget;
   const shown = room === 'living' ? lines.living : lines.bedroom;
+  const hasLamp = lines.living.some((l) => isLamp(l.id));
+  const sofa = lines.living.find((l) => isSofa(l.id));
+  const table = lines.living.find((l) => l.id === 'coffee-table');
+  const onlyLamp = () => showToast('Only the lamp can be swapped here. Ask Shopwise on Home to change the sofa');
 
   return (
     <Screen plain className="room-plan">
@@ -96,15 +101,19 @@ export function RoomPlan() {
         <button className="icon-btn on-image hero-action" aria-label="Edit home brief" onClick={() => navigate('/setup/brief')}>
           <Icon name="tune" />
         </button>
-        <button className="pin dark" style={{ left: lamp.ring.x - 80, top: lamp.ring.y + 70 }} onClick={() => navigate('/plan/lamp')}>
-          <i />Lamp · {money(lamp.price)}
-        </button>
-        <button className="pin" style={{ left: 70, top: 300 }} onClick={() => showToast('Only the lamp can be swapped in this prototype')}>
-          <i />Sofa · $700
-        </button>
-        {!undo && (
-          <button className="pin" style={{ left: 200, top: 370 }} onClick={() => showToast('Only the lamp can be swapped in this prototype')}>
-            <i />Table · $150
+        {hasLamp && (
+          <button className="pin dark" style={{ left: lamp.ring.x - 80, top: lamp.ring.y + 70 }} onClick={() => navigate('/plan/lamp')}>
+            <i />Lamp · {money(lamp.price)}
+          </button>
+        )}
+        {sofa && (
+          <button className="pin" style={{ left: 70, top: 300 }} onClick={onlyLamp}>
+            <i />Sofa · {money(sofa.price)}
+          </button>
+        )}
+        {table && !undo && (
+          <button className="pin" style={{ left: 200, top: 370 }} onClick={onlyLamp}>
+            <i />Table · {money(table.price)}
           </button>
         )}
       </div>
@@ -135,7 +144,7 @@ export function RoomPlan() {
         )}
         <BudgetTotal total={total} budget={budget} />
         <div className="lines">
-          {(updated ? lines.living.slice(0, 2) : shown).map((l) => (
+          {(updated ? lines.living.filter((l) => isSofa(l.id) || isLamp(l.id)) : shown).map((l) => (
             <LineRow
               key={l.id}
               {...l}
@@ -143,6 +152,14 @@ export function RoomPlan() {
               onClick={l.id === lamp.id ? () => navigate('/plan/lamp') : undefined}
             />
           ))}
+          {!updated && shown.length === 0 && (
+            <div className="room-empty">
+              <p>Nothing planned for the {room === 'living' ? 'living room' : 'bedroom'} yet</p>
+              <button className="btn small" onClick={() => navigate('/ai/plan', { state: { prompt: `Help me plan my ${room === 'living' ? 'living room' : 'bedroom'}.` } })}>
+                <Icon name="auto_awesome" />Plan with AI
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -152,7 +169,10 @@ export function RoomPlan() {
         </div>
       ) : (
         <>
-          <div className="bottom-fade short" />
+          <div className="bottom-fade short tall" />
+          <div className="plan-checkout">
+            <button className="btn primary" onClick={() => navigate('/checkout')}>Checkout · {money(total)}</button>
+          </div>
           <TabBar active="plan" onMissing={showToast} />
         </>
       )}
@@ -492,7 +512,7 @@ export function TryLamp() {
       </div>
       <section className="sheet" style={{ top: 430, bottom: 'auto', paddingBottom: 24, gap: 16 }}>
         <span className="handle" />
-        <LineRow name={next.name} price={next.price} image={next.thumb} />
+        <LineRow id={next.id} name={next.name} price={next.price} image={next.thumb} />
         <BudgetTotal total={total} budget={plan.answers.budget} />
       </section>
       <div className="footer floating">

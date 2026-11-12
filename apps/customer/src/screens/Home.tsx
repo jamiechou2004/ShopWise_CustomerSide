@@ -5,6 +5,7 @@ import { Icon, Screen, Toast, useToast } from '../components/ui';
 import { Category, categories, money, pairings, pieces } from '../data';
 import { SETUP_TOTAL, updateProfile, usePlan, useProfile } from '../store';
 import { resumePath } from './Setup';
+import { AskShopwiseCard } from './Assistant';
 
 export function TabBar({ active }: { active: 'home' | 'plan' | 'profile'; onMissing?: (m: string) => void }) {
   const navigate = useNavigate();
@@ -75,6 +76,8 @@ export function Home() {
               {(profile.name || 'S').charAt(0).toUpperCase()}
             </button>
           </header>
+
+          <AskShopwiseCard />
 
           <div className="tabs" role="tablist">
             {(['furniture', 'inspiration'] as const).map((t) => (

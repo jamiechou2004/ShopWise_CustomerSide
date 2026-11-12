@@ -57,3 +57,13 @@ export function Toast({ message }: { message: string | null }) {
     </div>
   );
 }
+
+/** Product thumbnail; pieces without a photo get an icon tile of the same size. */
+export function Thumb({ src, icon, alt = '' }: { src?: string; icon: string; alt?: string }) {
+  if (src) return <img src={src} alt={alt} />;
+  return (
+    <span className="thumb-tile" role={alt ? 'img' : undefined} aria-label={alt || undefined}>
+      <Icon name={icon} />
+    </span>
+  );
+}

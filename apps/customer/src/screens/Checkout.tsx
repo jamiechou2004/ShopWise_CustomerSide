@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { AppleMark, BackButton, Icon, Screen } from '../components/ui';
+import { AppleMark, BackButton, Icon, Screen, Thumb } from '../components/ui';
 import { money } from '../data';
 import {
   BUYING_ON,
@@ -14,6 +14,7 @@ import {
   signed,
   slotById,
   totals,
+  lineIcon,
 } from '../plan';
 import { Order, saveOrder, useOrder, usePlan, useProfile } from '../store';
 
@@ -81,7 +82,7 @@ export function ReviewFurniture() {
           <div className="lines">
             {c.lines.map((l) => (
               <div key={l.id} className="line-row compact">
-                <img src={l.image} alt="" />
+                <Thumb src={l.image} icon={lineIcon(l.id)} />
                 <span className="name">{l.name}</span>
                 <span className="price">{money(l.price)}</span>
               </div>
