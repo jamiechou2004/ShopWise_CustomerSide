@@ -34,10 +34,10 @@ function SignupNav({ step }: { step: 1 | 2 }) {
   return (
     <nav className="navbar">
       <BackButton />
-      <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={3} aria-valuenow={step}>
-        <span style={{ width: `${(step / 3) * 100}%` }} />
+      <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={2} aria-valuenow={step}>
+        <span style={{ width: `${(step / 2) * 100}%` }} />
       </div>
-      <span className="progress-count">{step} / 3</span>
+      <span className="progress-count">{step} / 2</span>
     </nav>
   );
 }
@@ -162,7 +162,6 @@ export function YoureIn() {
       <nav className="navbar">
         <BackButton />
         <div className="segments" aria-hidden="true">
-          <span />
           <span />
           <span />
         </div>

@@ -55,7 +55,7 @@ export function Home() {
     }
   }, [location.state]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const done = plan?.stepsDone ?? 0;
+  const done = Math.min(plan?.stepsDone ?? 0, SETUP_TOTAL);
   const setupComplete = plan?.status === 'ready';
   const favorites = new Set(profile.favorites ?? []);
   const shown = category === 'all' ? pieces : pieces.filter((p) => p.category === category);

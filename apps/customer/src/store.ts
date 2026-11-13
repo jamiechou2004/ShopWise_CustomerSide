@@ -200,5 +200,5 @@ export function useOrder(): Order | undefined {
   return useSyncExternalStore(subscribe, getOrder, getOrder);
 }
 
-export const SETUP_TOTAL = 11;
-export const QUESTION_COUNT = 9;
+export const SETUP_TOTAL = 10;
+export const QUESTION_COUNT = 8;

@@ -257,11 +257,13 @@ const STEPS: { title: string; gap?: number; render: (p: StepProps) => ReactNode;
     render: ({ a, set }) => <Budget a={a} set={set} />,
   },
   {
-    title: 'Where is your new home?',
-    gap: 16,
+    title: 'Where and when?',
+    gap: 18,
+    cta: 'Review my brief',
     valid: (a) => a.location.trim().length > 0,
     render: ({ a, set }) => (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+        <p className="section-label">Where</p>
         <label className="field" style={{ width: '100%' }}>
           <Icon name="location_on" />
           <input
@@ -280,27 +282,22 @@ const STEPS: { title: string; gap?: number; render: (p: StepProps) => ReactNode;
           <Icon name="near_me" fill />
           Use my location
         </button>
-      </div>
-    ),
-  },
-  {
-    title: 'When should it be ready?',
-    cta: 'Review my brief',
-    render: ({ a, set }) => (
-      <div className="options" role="radiogroup" aria-label="Timing">
-        {TIMING.map((t) => (
-          <Choice key={t.id} selected={a.timing === t.id} icon="calendar_month" label={t.label} onClick={() => set({ timing: t.id })} />
-        ))}
-        {a.timing === 'flexible' && (
-          <label className="field">
-            <input
-              autoFocus
-              placeholder="Anything we should plan around?"
-              value={a.timingNote}
-              onChange={(e) => set({ timingNote: e.target.value })}
-            />
-          </label>
-        )}
+        <p className="section-label" style={{ marginTop: 10 }}>When should it be ready?</p>
+        <div className="options" role="radiogroup" aria-label="Timing" style={{ width: '100%' }}>
+          {TIMING.map((t) => (
+            <Choice key={t.id} selected={a.timing === t.id} icon="calendar_month" label={t.label} onClick={() => set({ timing: t.id })} />
+          ))}
+          {a.timing === 'flexible' && (
+            <label className="field">
+              <input
+                autoFocus
+                placeholder="Anything we should plan around?"
+                value={a.timingNote}
+                onChange={(e) => set({ timingNote: e.target.value })}
+              />
+            </label>
+          )}
+        </div>
       </div>
     ),
   },
@@ -496,7 +493,7 @@ function briefRows(a: PlanAnswers) {
     { label: 'Style', value: STYLES.find((s) => s.id === a.style)?.label ?? '—', step: 6 },
     { label: 'Budget', value: a.budget === null ? 'Not sure yet' : money(a.budget), step: 7 },
     { label: 'Location', value: a.location.split(',')[0] || '—', step: 8 },
-    { label: 'Ready', value: TIMING.find((t) => t.id === a.timing)?.label ?? '—', step: 9 },
+    { label: 'Ready', value: TIMING.find((t) => t.id === a.timing)?.label ?? '—', step: 8 },
   ];
 }
 
