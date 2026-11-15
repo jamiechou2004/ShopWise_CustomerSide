@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Shopwise · Apple Watch</title>
+  <meta name="description" content="Shopwise on Apple Watch: out-of-stock alert, delivery day and rating. Simulated prototype.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">SHOPWISE · APPLE WATCH</p>
+      <h1 id="flow-title"></h1>
+      <p class="lede" id="flow-note"></p>
+    </header>
+
+    <div class="watch" aria-label="Apple Watch prototype">
+      <div class="band top" aria-hidden="true"></div>
+      <div class="case">
+        <div class="glass"><div class="screen" id="screen"></div></div>
+        <span class="crown" aria-hidden="true"></span>
+        <span class="side" aria-hidden="true"></span>
+      </div>
+      <div class="band bottom" aria-hidden="true"></div>
+    </div>
+
+    <p class="handoff" id="handoff" hidden>
+      <a href="../customer/#/orders">Continue in the customer app →</a>
+    </p>
+
+    <nav class="flows" aria-label="Scenarios">
+      <button data-flow="stock">Out of stock</button>
+      <button data-flow="delivery">Delivery day</button>
+      <button data-flow="rate">Rate delivery</button>
+    </nav>
+    <p class="hint">Tap the watch to act. Press R to restart the scenario. <a href="../">All prototypes</a></p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

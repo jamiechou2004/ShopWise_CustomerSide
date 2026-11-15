@@ -2,6 +2,7 @@
 //   site/              landing page (site-src/index.html)
 //   site/customer/     customer app (Vite build, hash routing, relative base)
 //   site/gm-console/   GM console (static files, copied as-is)
+//   site/watch/        Apple Watch prototype (static files, copied as-is)
 import { execSync } from 'node:child_process';
 import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 
@@ -17,6 +18,11 @@ execSync('npx tsc --noEmit -p apps/customer && npx vite build apps/customer --ba
 cpSync('apps/gm-console', `${out}/gm-console`, {
   recursive: true,
   filter: (src) => !/(^|\/)(README\.md|figma)$/.test(src),
+});
+
+cpSync('apps/watch', `${out}/watch`, {
+  recursive: true,
+  filter: (src) => !/(^|\/)README\.md$/.test(src),
 });
 
 cpSync('site-src', out, { recursive: true });

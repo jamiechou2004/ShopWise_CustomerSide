@@ -1,0 +1,135 @@
+/* Page chrome uses the Shopwise tokens; the watch screen follows the watchOS kit
+   used in Figma (46mm, 208 × 248 pt, tint #CF8B61). */
+:root {
+  --ink: #161615; --ink-2: #5c5953; --ink-3: #7e7a72; --line: #e4e2dc;
+  --surface: #f8f8f6; --accent: #b36636; --accent-deep: #7e4420; --accent-soft: #f8eee7;
+  --tint: #cf8b61;
+  --font: 'Lexend Deca', system-ui, sans-serif;
+  --watch-font: -apple-system, 'SF Pro Text', system-ui, 'Helvetica Neue', Arial, sans-serif;
+  --scale: 1.7;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font); color: var(--ink); -webkit-font-smoothing: antialiased;
+  background: linear-gradient(180deg, var(--accent-soft) 0, #fff 420px) no-repeat, #fff;
+  min-height: 100vh;
+}
+main {
+  max-width: 560px; margin: 0 auto; padding: 48px 16px 40px;
+  display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center;
+}
+.eyebrow { font-weight: 600; font-size: 13px; letter-spacing: 1.56px; color: var(--accent); }
+h1 { font-weight: 400; font-size: 30px; line-height: 1.15; margin-top: 10px; text-wrap: balance; }
+.lede { margin-top: 8px; font-size: 15px; line-height: 1.5; color: var(--ink-2); min-height: 45px; text-wrap: pretty; }
+
+/* ---------- Watch body ---------- */
+.watch { display: flex; flex-direction: column; align-items: center; }
+.band { width: calc(150px * var(--scale)); height: 44px; background: #26241f; }
+.band.top { border-radius: 26px 26px 0 0; margin-bottom: -6px; }
+.band.bottom { border-radius: 0 0 26px 26px; margin-top: -6px; }
+.case {
+  position: relative; z-index: 1; padding: calc(11px * var(--scale));
+  background: #1b1a18; border-radius: calc(50px * var(--scale));
+  box-shadow: 0 18px 40px rgba(23, 23, 20, 0.22), inset 0 0 0 2px #34322d;
+}
+.glass {
+  width: calc(208px * var(--scale)); height: calc(248px * var(--scale));
+  border-radius: calc(40px * var(--scale)); overflow: hidden; background: #000;
+}
+.crown, .side { position: absolute; right: -9px; background: #2b2925; }
+.crown { top: 26%; width: 12px; height: 44px; border-radius: 4px; }
+.side { top: 50%; width: 6px; right: -5px; height: 64px; border-radius: 3px; }
+
+.screen {
+  position: relative; width: 208px; height: 248px; transform: scale(var(--scale)); transform-origin: 0 0;
+  background: #000; color: #fff; font-family: var(--watch-font); overflow: hidden; user-select: none; text-align: left;
+}
+.view { position: absolute; inset: 0; animation: view-in 250ms ease-out; }
+@keyframes view-in { from { opacity: 0; } }
+.screen button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; text-align: center; }
+.screen button:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+
+/* Long Look notification */
+.time { position: absolute; top: 10px; right: 23px; font-weight: 500; font-size: 16px; line-height: 19px; color: #f2f4fc; }
+.app-icon {
+  position: absolute; left: 26px; top: 18px; width: 30px; height: 30px; border-radius: 50%; z-index: 1;
+  background: #614c3d; display: grid; place-items: center;
+}
+.note {
+  position: absolute; left: 3px; top: 30px; width: 202px; height: 69px; border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12); padding: 7px 8px 0 8px; font-size: 16px; line-height: 19px;
+}
+.note small { display: block; text-align: right; font-size: 12px; line-height: 15px; color: rgba(255, 255, 255, 0.55); padding-right: 3px; }
+.note b { display: block; font-weight: 600; white-space: nowrap; }
+.note span { display: block; white-space: nowrap; }
+.screen .pill {
+  position: absolute; left: 3px; width: 202px; height: 44px; border-radius: 22px;
+  background: rgba(255, 255, 255, 0.14); font-size: 16px; font-weight: 500; color: #fff;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+.screen .pill.primary { background: var(--tint); color: #161615; }
+.pill:active { transform: scale(0.97); filter: brightness(0.9); }
+.pill.one { top: 103px; } .pill.two { top: 151px; }
+
+/* App screens: status + title */
+.title { position: absolute; top: 29px; right: 24px; font-size: 16px; line-height: 19px; font-weight: 500; color: var(--tint); }
+.center { position: absolute; left: 0; right: 0; text-align: center; }
+.center.icon { top: 104px; height: 41px; color: var(--tint); }
+.center.head { top: 150px; font-size: 17px; line-height: 20px; font-weight: 600; }
+.center.sub { top: 174px; font-size: 15px; line-height: 18px; color: #9b9ba1; }
+
+/* Rate */
+.stars { position: absolute; left: 16px; top: 80px; display: flex; gap: 4px; }
+.stars button { width: 32px; height: 32px; display: grid; place-items: center; color: #3a3a3c; transition: color 140ms ease, transform 140ms ease; }
+.stars button.on { color: var(--tint); }
+.stars button:active { transform: scale(0.88); }
+.rate-label { top: 126px; font-size: 17px; line-height: 20px; font-weight: 600; }
+.rate-hint { top: 152px; font-size: 13px; line-height: 16px; color: #9b9ba1; }
+.pill.submit { left: 25px; width: 159px; top: 190px; }
+
+/* Smart Stack */
+.date { position: absolute; left: 20px; top: 15px; font-size: 17px; line-height: 20px; font-weight: 500; color: #b0b0b0; }
+.stack-time { position: absolute; right: 19px; top: 15px; font-size: 17px; line-height: 20px; font-weight: 500; }
+.widget { position: absolute; left: 7px; width: 194px; height: 81px; border-radius: 14.5px; background: rgba(255, 255, 255, 0.12); display: block; text-align: left; }
+.screen .widget.live { text-align: left; }
+.widget.live { top: 44px; }
+.widget.live b { position: absolute; left: 10px; top: 11px; font-size: 17px; line-height: 20px; font-weight: 600; color: #e3965f; }
+.widget.live span { position: absolute; left: 10px; top: 30px; font-size: 17px; line-height: 20px; color: #f2f4fc; }
+.widget.live .app-icon { left: auto; right: 10px; top: 11px; width: 18px; height: 18px; }
+.widget.live .app-icon svg { width: 9px; height: 10px; }
+.track { position: absolute; left: 10px; top: 54px; width: 175px; height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.16); }
+.fill { position: absolute; left: 0; top: 0; height: 12px; border-radius: 6px; background: var(--tint); transition: width 900ms ease; }
+.dot { position: absolute; top: -2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left 900ms ease; }
+.widget.rings { top: 130px; display: flex; gap: 12px; padding: 15px 10px; }
+.ring { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; font-size: 19px; font-weight: 600; }
+.ring.a { border: 6px solid #30d158; }
+.ring.b { border: 2px dotted #6e6e73; font-size: 12px; color: #ff9f0a; }
+.ring.c { background: radial-gradient(circle at 35% 35%, #4b8fd9, #12305c 70%); }
+.all-apps {
+  position: absolute; left: 36px; top: 197px; width: 136px; height: 37px; border-radius: 19px;
+  background: rgba(155, 160, 170, 0.14); display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 14.5px; color: rgba(255, 255, 255, 0.8);
+}
+
+/* Watch face (after a notification is dismissed) */
+.face { display: grid; place-content: center; text-align: center; width: 100%; height: 100%; }
+.face b { font-size: 54px; font-weight: 500; letter-spacing: -1px; line-height: 1; }
+.face span { margin-top: 8px; font-size: 13px; color: #9b9ba1; }
+
+/* ---------- Page controls ---------- */
+.handoff a { font-weight: 500; font-size: 15px; color: var(--accent-deep); }
+.flows { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.flows button {
+  font: inherit; font-size: 14px; font-weight: 500; min-height: 44px; padding: 0 18px; border-radius: 22px;
+  border: 1px solid var(--line); background: #fff; color: var(--ink-2); cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+.flows button[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.flows button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hint { font-size: 13px; line-height: 1.6; color: var(--ink-3); }
+.hint a { color: var(--ink-2); }
+
+@media (max-width: 420px) { :root { --scale: 1.4; } h1 { font-size: 26px; } }
+@media (prefers-reduced-motion: reduce) {
+  .view { animation: none; } .fill, .dot, .pill, .stars button { transition: none; }
+}

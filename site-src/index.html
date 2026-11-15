@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Shopwise Prototypes</title>
-  <meta name="description" content="Interactive prototypes for Shopwise (UXDG 415): the customer app and the GM console.">
+  <meta name="description" content="Interactive prototypes for Shopwise (UXDG 415): the customer app, the Apple Watch companion and the GM console.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -49,6 +49,13 @@
     .shot .route { grid-column: 1 / -1; height: auto; padding: 14px 12px; flex-direction: row; align-items: center; gap: 6px; }
     .shot .route i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
     .shot .route i.on { background: var(--accent); }
+    .shot.wrist { display: grid; grid-template-columns: 1fr; place-items: center; padding: 0; }
+    .wrist .face { width: 150px; height: 178px; border-radius: 34px; background: #000; color: #fff; padding: 18px 10px 0; display: flex; flex-direction: column; gap: 2px; font-family: system-ui, sans-serif; box-shadow: 0 0 0 6px #1b1a18; }
+    .wrist .face small { font-size: 9px; color: #8e8e93; text-align: right; }
+    .wrist .face b { font-size: 12px; font-weight: 600; }
+    .wrist .face span { height: auto; border: 0; background: none; padding: 0; font-size: 12px; color: #fff; display: block; }
+    .wrist .face i { margin-top: 6px; height: 30px; border-radius: 15px; background: #cf8b61; color: #161615; font-style: normal; font-size: 12px; font-weight: 500; display: grid; place-items: center; }
+    .wrist .face i.ghost { background: rgba(255, 255, 255, 0.14); color: #fff; }
     .body { padding: 22px; display: flex; flex-direction: column; gap: 8px; }
     .body h2 { font-weight: 500; font-size: 20px; }
     .body p { font-size: 15px; line-height: 1.5; color: var(--ink-2); }
@@ -65,7 +72,7 @@
     <header>
       <p class="eyebrow">SHOPWISE · UXDG 415</p>
       <h1>A home that feels like you.</h1>
-      <p class="lede">Two connected prototypes from one story: Alex furnishes a first apartment in the customer app, and the GM console runs the same order SW-10482 behind the scenes.</p>
+      <p class="lede">Three connected prototypes from one story: Alex furnishes a first apartment in the customer app, the Apple Watch keeps up with the order, and the GM console runs the same order SW-10482 behind the scenes.</p>
     </header>
 
     <section class="apps" aria-label="Prototypes">
@@ -75,6 +82,17 @@
           <h2>Customer app</h2>
           <p>Onboarding, design a room, select and replace, checkout, and the check-in with return or exchange.</p>
           <div class="meta"><span>iPhone · 390 × 844</span><span>5 workflows</span></div>
+          <span class="open">Open prototype →</span>
+        </div>
+      </a>
+      <a class="app" href="watch/">
+        <div class="shot wrist" aria-hidden="true">
+          <div class="face"><small>now</small><b>Lamp is out of stock</b><span>Pick a swap on iPhone</span><i>See details</i><i class="ghost">Remind me later</i></div>
+        </div>
+        <div class="body">
+          <h2>Apple Watch</h2>
+          <p>Out-of-stock alert with a hand-off to iPhone, delivery-day ETA, and a one-tap rating.</p>
+          <div class="meta"><span>Watch · 46mm</span><span>3 scenarios</span></div>
           <span class="open">Open prototype →</span>
         </div>
       </a>
