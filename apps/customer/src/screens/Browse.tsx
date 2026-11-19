@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { BackButton, Icon, Screen, Toast, useToast } from '../components/ui';
-import { money, styles } from '../data';
-import { resetOnboarding, savePlan, useOrder, useProfile } from '../store';
+import { money, pieceById, pieces, styles } from '../data';
+import { resetOnboarding, savePlan, updateProfile, useOrder, usePlan, useProfile } from '../store';
+import { resumePath } from './Setup';
 import { simulateDelivery } from './Orders';
 import { TabBar } from './Home';
 
@@ -133,11 +134,11 @@ export function StyleDetail() {
           </div>
           <div className="rail">
             {style.seating.map((p) => (
-              <article key={p.name} className="piece">
-                <div className="media"><img src={p.image} alt={p.name} /></div>
+              <button key={p.name} className="piece link" onClick={() => navigate(`/piece/${p.id}`)}>
+                <span className="media"><img src={p.image} alt="" /></span>
                 <span className="name">{p.name}</span>
                 <span className="price">{money(p.price)}</span>
-              </article>
+              </button>
             ))}
           </div>
         </div>
@@ -154,6 +155,80 @@ export function StyleDetail() {
         </button>
       </div>
       <Toast message={toast} />
+    </Screen>
+  );
+}
+
+/* H6 · Piece detail — opened from the Furniture grid and from a style's pieces */
+export function PieceDetail() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const profile = useProfile();
+  const plan = usePlan();
+  const piece = pieceById(id);
+  if (!piece) return <Navigate to="/home" replace />;
+
+  const favorites = new Set(profile.favorites ?? []);
+  const saved = favorites.has(piece.id);
+  const toggleSaved = () => {
+    saved ? favorites.delete(piece.id) : favorites.add(piece.id);
+    updateProfile({ favorites: [...favorites] });
+  };
+  const planReady = plan?.status === 'ready';
+  const others = pieces.filter((p) => p.id !== piece.id && p.image !== piece.image).slice(0, 4);
+
+  return (
+    <Screen plain>
+      <div className="scroll">
+        <div className="detail-hero product">
+          <img src={piece.image} alt={piece.name} />
+          <div style={{ position: 'absolute', top: 0, left: 16 }}>
+            <BackButton onImage />
+          </div>
+          <button
+            className="icon-btn on-image right"
+            aria-label={`Save ${piece.name}`}
+            aria-pressed={saved}
+            onClick={toggleSaved}
+            style={{ color: saved ? 'var(--accent)' : undefined }}
+          >
+            <Icon name="favorite" fill={saved} />
+          </button>
+        </div>
+        <div className="body" style={{ gap: 16, paddingTop: 20, paddingBottom: 130 }}>
+          <div className="item-head">
+            <div>
+              <h1 className="title" style={{ fontSize: 28, lineHeight: '34px' }}>{piece.name}</h1>
+              <p className="meta">{piece.store}</p>
+            </div>
+            <span className="price">{money(piece.price)}</span>
+          </div>
+          <p style={{ fontSize: 15, lineHeight: '22px', color: 'var(--ink-2)' }}>{piece.note}</p>
+          <div className="list specs" style={{ background: 'var(--surface)', borderRadius: 18 }}>
+            <div className="list-row"><span className="label">Size</span><span className="value">{piece.size}</span></div>
+            <div className="list-row"><span className="label">Material</span><span className="value">{piece.material}</span></div>
+            <div className="list-row"><span className="label">Sold by</span><span className="value">{piece.store}</span></div>
+          </div>
+          <div className="section-head"><h2>Goes well with</h2></div>
+          <div className="rail">
+            {others.map((p) => (
+              <button key={p.id} className="piece link" onClick={() => navigate(`/piece/${p.id}`, { replace: true })}>
+                <span className="media"><img src={p.image} alt="" /></span>
+                <span className="name">{p.name}</span>
+                <span className="price">{money(p.price)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="footer" style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+        <button
+          className="btn primary"
+          onClick={() => navigate(planReady ? '/plan' : resumePath(plan?.stepsDone ?? 0))}
+        >
+          {planReady ? 'Open my room plan' : 'Plan a room with this'}
+        </button>
+      </div>
     </Screen>
   );
 }

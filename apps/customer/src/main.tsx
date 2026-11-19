@@ -4,7 +4,7 @@ import { BrowserRouter, HashRouter, MemoryRouter, Navigate, Route, Routes, useLo
 import { Device } from './components/Device';
 import { Email, Greeting, SignUp, Welcome, YoureIn } from './screens/Onboarding';
 import { Home } from './screens/Home';
-import { Profile, Search, StyleDetail } from './screens/Browse';
+import { PieceDetail, Profile, Search, StyleDetail } from './screens/Browse';
 import { Brief, Generating, SetupStep } from './screens/Setup';
 import { AskAI, BrowseLamps, FindingOptions, LampDetail, LampOptions, PlanSaved, ReplaceLamp, RoomPlan, TryLamp } from './screens/Plan';
 import { Costs, Delivery, LampSwapped, OrderPlaced, PickLamp, ReviewFurniture } from './screens/Checkout';
@@ -45,6 +45,7 @@ function App() {
         <Route path="/home" element={<RequireOnboarded><Home /></RequireOnboarded>} />
         <Route path="/search" element={<RequireOnboarded><Search /></RequireOnboarded>} />
         <Route path="/style/:id" element={<RequireOnboarded><StyleDetail /></RequireOnboarded>} />
+        <Route path="/piece/:id" element={<RequireOnboarded><PieceDetail /></RequireOnboarded>} />
         <Route path="/profile" element={<RequireOnboarded><Profile /></RequireOnboarded>} />
         <Route path="/setup/brief" element={<RequireOnboarded><Brief /></RequireOnboarded>} />
         <Route path="/setup/generating" element={<RequireOnboarded><Generating /></RequireOnboarded>} />

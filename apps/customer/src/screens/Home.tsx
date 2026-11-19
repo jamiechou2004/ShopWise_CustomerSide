@@ -142,14 +142,22 @@ export function Home() {
 
               <div className="grid">
                 {shown.map((p) => (
-                  <article key={p.id} className="piece">
+                  <article
+                    key={p.id}
+                    className="piece link"
+                    role="link"
+                    tabIndex={0}
+                    aria-label={`${p.name}, ${money(p.price)}`}
+                    onClick={() => navigate(`/piece/${p.id}`)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && e.target === e.currentTarget) navigate(`/piece/${p.id}`); }}
+                  >
                     <div className="media">
                       <img src={p.image} alt={p.name} />
                       <button
                         className="heart"
                         aria-label={`Save ${p.name}`}
                         aria-pressed={favorites.has(p.id)}
-                        onClick={() => toggleFavorite(p.id)}
+                        onClick={(e) => { e.stopPropagation(); toggleFavorite(p.id); }}
                       >
                         <Icon name="favorite" />
                       </button>

@@ -413,6 +413,10 @@ img { display: block; }
 .piece .media img { width: 100%; height: 100%; object-fit: cover; }
 .piece .name { font-weight: 500; }
 .piece .price { color: var(--ink-2); }
+.piece.link { cursor: pointer; transition: transform 140ms ease; }
+.piece.link:active { transform: scale(0.98); }
+.piece.link .media { display: block; }
+.detail-hero.product { background: var(--surface); }
 .heart {
   position: absolute; top: 10px; right: 10px;
   width: 30px; height: 30px; border-radius: 15px; background: #fff;
