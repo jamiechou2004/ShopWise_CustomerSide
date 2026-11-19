@@ -156,7 +156,7 @@ export function RoomPlan() {
             <div className="room-empty">
               <p>Nothing planned for the {room === 'living' ? 'living room' : 'bedroom'} yet</p>
               <button className="btn small" onClick={() => navigate('/ai/plan', { state: { prompt: `Help me plan my ${room === 'living' ? 'living room' : 'bedroom'}.` } })}>
-                <Icon name="auto_awesome" />Plan with AI
+                <Icon name="auto_awesome" />Chat with Shoppal
               </button>
             </div>
           )}

@@ -110,7 +110,7 @@ export function PickPhoto() {
     <Screen plain className="picker">
       <nav className="navbar centered">
         <BackButton icon="close" label="Close" />
-        <span className="nav-title">Plan with AI</span>
+        <span className="nav-title">Chat with Shoppal</span>
       </nav>
       <div className="picker-dim" />
       <section className="picker-sheet" aria-label="Recents">
@@ -195,7 +195,7 @@ function ChatView({ msgs, typing, onFreeText }: { msgs: Msg[]; typing: boolean; 
     <Screen>
       <nav className="navbar centered">
         <BackButton to="/home" icon="close" label="Close" />
-        <span className="nav-title">Plan with AI</span>
+        <span className="nav-title">Chat with Shoppal</span>
       </nav>
       <div className="scroll chat" aria-live="polite">
         <div className="chat-list">
